@@ -1,0 +1,57 @@
+name: Ubuntu build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ubuntu-build-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build/runtime dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential libsdl2-2.0-0 zlib1g xvfb xauth
+
+      - name: Build CipherNES for Ubuntu
+        run: ./build_ubuntu.sh
+
+      - name: Native Ubuntu CLI smoke check
+        run: build/ubuntu/bin/CipherNES --help
+
+      - name: First-launch storage layout smoke test
+        run: |
+          sandbox_home="$(mktemp -d)"
+          HOME="$sandbox_home" build/ubuntu/bin/CipherNES --help
+          for folder in Saves SaveState Screenshots Videos Cheats TAS bios config logs roms; do
+            test -d "$sandbox_home/.local/share/HodgkinsStudios/CipherNES/$folder"
+          done
+          test ! -d build/ubuntu/bin/bios
+          CIPHERNES_RUNTIME_DIR="$(mktemp -d)" build/ubuntu/bin/CipherNES --help
+
+      - name: Original synthetic ROM timeline and TAS branching regression
+        run: |
+          python3 .github/ci/make_synthetic_rom.py "$RUNNER_TEMP/ciphernes-test.nes"
+          ./.github/ci/test_timeline.sh "$RUNNER_TEMP/ciphernes-test.nes"
+          ./.github/ci/test_host_audio.sh
+          mkdir -p "$RUNNER_TEMP/ciphernes-runtime"
+          CIPHERNES_RUNTIME_DIR="$RUNNER_TEMP/ciphernes-runtime" \
+            SDL_AUDIODRIVER=dummy xvfb-run -a \
+            build/ubuntu/bin/CipherNES --tas-branch-test "$RUNNER_TEMP/ciphernes-test.nes"
+
+      - name: Complete-state rewind throughput and original ROM validation
+        run: |
+          ./.github/ci/benchmark_timeline.sh "$RUNNER_TEMP/ciphernes-test.nes" 120
+          build/ubuntu/bin/CipherNES --validate "$RUNNER_TEMP/ciphernes-test.nes" 180
+
+      - name: Upload Ubuntu build
+        uses: actions/upload-artifact@v4
+        with:
+          name: CipherNES-Ubuntu
+          path: build/ubuntu/bin/

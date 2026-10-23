@@ -1,0 +1,85 @@
+name: Flatpak package
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: flatpak-package-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  flatpak:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Flatpak tooling
+        timeout-minutes: 8
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          # Hosted runner apt mirrors can occasionally stall. Bound each retry
+          # so a broken mirror cannot occupy a runner indefinitely.
+          for attempt in 1 2 3; do
+            if sudo timeout 120s apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 update; then
+              break
+            fi
+            if [ "$attempt" = 3 ]; then
+              echo "Flatpak dependency index failed after three attempts"
+              exit 1
+            fi
+            sleep 5
+          done
+          sudo timeout 180s apt-get -o Dpkg::Use-Pty=0 install -y \
+            flatpak flatpak-builder appstream desktop-file-utils elfutils \
+            librsvg2-common libgdk-pixbuf2.0-bin
+          flatpak --version
+          flatpak-builder --version
+
+      - name: Add Flathub and install runtime
+        timeout-minutes: 20
+        run: |
+          timeout 90s flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          timeout 900s flatpak install --user --noninteractive -y flathub \
+            org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08
+
+      - name: Validate metadata
+        run: |
+          desktop-file-validate packaging/flatpak/io.github.hodgkinsstudios.CipherNES.desktop
+          appstreamcli validate --no-net packaging/flatpak/io.github.hodgkinsstudios.CipherNES.metainfo.xml
+
+      - name: Build Flatpak bundle
+        run: |
+          chmod +x packaging/flatpak/build_flatpak.sh
+          ./packaging/flatpak/build_flatpak.sh
+
+      - name: Install bundle
+        run: |
+          flatpak install --user --noninteractive -y ./dist/CipherNES-1.0.0-x86_64.flatpak
+
+      - name: Installed launcher smoke test
+        run: |
+          flatpak run io.github.hodgkinsstudios.CipherNES --help
+          test -d "$HOME/.var/app/io.github.hodgkinsstudios.CipherNES/data/HodgkinsStudios/CipherNES/Saves"
+          test -d "$HOME/.var/app/io.github.hodgkinsstudios.CipherNES/data/HodgkinsStudios/CipherNES/SaveState"
+          test -d "$HOME/.var/app/io.github.hodgkinsstudios.CipherNES/data/HodgkinsStudios/CipherNES/Screenshots"
+          test -d "$HOME/.var/app/io.github.hodgkinsstudios.CipherNES/data/HodgkinsStudios/CipherNES/Videos"
+          test -d "$HOME/.var/app/io.github.hodgkinsstudios.CipherNES/data/HodgkinsStudios/CipherNES/Cheats"
+          test -d "$HOME/.var/app/io.github.hodgkinsstudios.CipherNES/data/HodgkinsStudios/CipherNES/TAS"
+          test -d "$HOME/.var/app/io.github.hodgkinsstudios.CipherNES/data/HodgkinsStudios/CipherNES/bios"
+
+      - name: Show Flatpak permissions
+        run: flatpak info --user --show-permissions io.github.hodgkinsstudios.CipherNES
+
+      - name: Upload Flatpak bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: CipherNES-Flatpak-x86_64
+          path: |
+            dist/CipherNES-1.0.0-x86_64.flatpak
+            dist/CipherNES-1.0.0-x86_64.flatpak.sha256

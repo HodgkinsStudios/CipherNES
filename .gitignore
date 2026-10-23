@@ -1,0 +1,62 @@
+# Build output
+/dist/
+/build/
+/bin/
+/obj/
+*.o
+*.so
+*.dll
+*.dylib
+*.exe
+*.a
+*.dll.a
+*.app/
+*.dSYM/
+*.deb
+*.deb.sha256
+*.flatpak
+*.flatpak.sha256
+*.AppImage
+*.AppImage.sha256
+/squashfs-root/
+/.flatpak-builder/
+
+# Runtime/user data
+/runtime/
+/Saves/
+/SaveState/
+/Screenshots/
+/TAS/
+/Cheats/
+/logs/
+/config/
+roms/
+saves/
+*.SAV
+*.sav
+*.state
+*.nss
+*.png
+*.avi
+
+# User-supplied firmware and test fixtures
+/bios/disksys.rom
+*.nes
+*.fds
+*.nsf
+*.unf
+*.unif
+
+# Local editor/system files
+*.user
+*.layout
+*.depend
+.DS_Store
+*~
+
+# Generated Python test cache
+__pycache__/
+*.pyc
+
+# Generated per-user frontend configuration
+/CipherNES.cfg

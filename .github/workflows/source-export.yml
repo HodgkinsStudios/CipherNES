@@ -1,0 +1,28 @@
+name: Export release source
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    name: Exact committed source ZIP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout commit
+        uses: actions/checkout@v4
+      - name: Zip tracked repository contents
+        shell: bash
+        run: |
+          mkdir -p dist/CipherNES-1.0.0-Source
+          git ls-files -z | tar --null -T - -cf - | tar -xf - -C dist/CipherNES-1.0.0-Source
+          cd dist
+          zip -qr CipherNES-1.0.0-GitHub-Source.zip CipherNES-1.0.0-Source
+      - name: Upload exact source
+        uses: actions/upload-artifact@v4
+        with:
+          name: CipherNES-Exact-Source
+          path: dist/CipherNES-1.0.0-GitHub-Source.zip
+          if-no-files-found: error
+          retention-days: 30

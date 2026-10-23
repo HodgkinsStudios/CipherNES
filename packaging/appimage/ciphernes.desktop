@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=CipherNES
+GenericName=NES/Famicom Emulator
+Comment=Play NES and Famicom software with CipherNES
+Exec=CipherNES %f
+Icon=ciphernes
+Terminal=false
+Categories=Game;Emulator;
+Keywords=NES;Famicom;Emulator;Retro;
+StartupNotify=true
+X-AppImage-Name=CipherNES
+X-AppImage-Version=1.0.0
+X-AppImage-Arch=x86_64
