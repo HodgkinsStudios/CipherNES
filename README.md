@@ -48,7 +48,7 @@ For isolated testing, set `CIPHERNES_RUNTIME_DIR` to an absolute temporary direc
 ## Portable executables
 
 - **Windows:** `CipherNES.exe` is a single distributable PE file containing the emulator core, SDL2, zlib and supporting DLL bytes as resources. On launch, it verifies and extracts the bundled DLLs into the per-user `runtime/` subdirectory; no second release file is needed.
-- **macOS:** the command-line runnable `CipherNES-macOS-<arch>-single-file` contains the core and SDL2 runtime dylib bytes. They are unpacked into the per-user `runtime/` directory when launched. A conventional `CipherNES.app` bundle is also provided for Finder integration. Apple Gatekeeper may require the customary signing/notarization flow for public distribution.
+- **macOS:** the command-line runnable `CipherNES-macOS-<arch>-portable` contains the core and SDL2 runtime dylib bytes. They are unpacked into the per-user `runtime/` directory when launched. A conventional `CipherNES.app` bundle is also provided for Finder integration. Apple Gatekeeper may require the customary signing/notarization flow for public distribution.
 - **Linux:** the **AppImage is the recommended single-file portable distribution** and bundles application/runtime libraries. The small native `CipherNES` executable also links its emulator core internally but still requires host SDL2/zlib and the usual system libraries; the `.deb` and Flatpak installers manage their own runtime dependencies.
 
 ## Accuracy and validation
