@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=CipherNES
+Comment=NES/Famicom emulator
+Exec=ciphernes %f
+Icon=applications-games
+Terminal=false
+Categories=Game;Emulator;
+StartupNotify=true

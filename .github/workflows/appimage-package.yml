@@ -1,0 +1,83 @@
+name: AppImage package
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: appimage-package-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  appimage:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build/runtime dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y             build-essential             libsdl2-2.0-0             zlib1g             curl             file             desktop-file-utils             appstream
+
+      - name: Build AppImage
+        run: |
+          chmod +x packaging/appimage/build_appimage.sh
+          ./packaging/appimage/build_appimage.sh
+
+      - name: Inspect AppImage
+        run: |
+          file dist/CipherNES-1.0.1-x86_64.AppImage
+          test -x dist/CipherNES-1.0.1-x86_64.AppImage
+          test -s dist/CipherNES-1.0.1-x86_64.AppImage.sha256
+
+      - name: Extract-and-run smoke test
+        env:
+          HOME: ${{ runner.temp }}/ciphernes-home
+          XDG_DATA_HOME: ${{ runner.temp }}/ciphernes-data
+          CIPHERNES_SKIP_INITIAL_CONTROLLER_SCAN: "1"
+        run: |
+          dist/CipherNES-1.0.1-x86_64.AppImage --appimage-extract-and-run --help
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/Saves"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/SaveState"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/Screenshots"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/Videos"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/Cheats"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/TAS"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/bios"
+
+      - name: Bundled SDL UI smoke test
+        env:
+          HOME: ${{ runner.temp }}/ciphernes-ui-home
+          XDG_DATA_HOME: ${{ runner.temp }}/ciphernes-ui-data
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+          CIPHERNES_SKIP_INITIAL_CONTROLLER_SCAN: "1"
+        run: |
+          dist/CipherNES-1.0.1-x86_64.AppImage --appimage-extract-and-run --ui-preview "${{ runner.temp }}/ciphernes-appimage-preview.png"
+          test -s "${{ runner.temp }}/ciphernes-appimage-preview.png"
+          file "${{ runner.temp }}/ciphernes-appimage-preview.png" | grep -q "PNG image data"
+
+      - name: Extract and inspect payload
+        run: |
+          rm -rf squashfs-root
+          dist/CipherNES-1.0.1-x86_64.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          test -x squashfs-root/usr/bin/CipherNES
+          test -f squashfs-root/usr/lib/libSDL2-2.0.so.0
+          test -f squashfs-root/usr/lib/libz.so.1
+          test -f squashfs-root/usr/lib/libstdc++.so.6
+          test -f squashfs-root/usr/lib/libgcc_s.so.1
+          test -f squashfs-root/ciphernes.desktop
+          test -f squashfs-root/ciphernes.svg
+          test -L squashfs-root/.DirIcon
+
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: CipherNES-AppImage-x86_64
+          path: |
+            dist/CipherNES-1.0.1-x86_64.AppImage
+            dist/CipherNES-1.0.1-x86_64.AppImage.sha256

@@ -1,0 +1,58 @@
+name: Debian package
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: debian-package-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  debian:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build/runtime dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libsdl2-2.0-0 zlib1g
+
+      - name: Build Debian package
+        run: |
+          chmod +x packaging/debian/build_deb.sh
+          ./packaging/debian/build_deb.sh
+
+      - name: Inspect package
+        run: |
+          dpkg-deb -I dist/CipherNES-1.0.1-amd64.deb
+          dpkg-deb -c dist/CipherNES-1.0.1-amd64.deb
+
+      - name: Install package
+        run: sudo apt-get install -y ./dist/CipherNES-1.0.1-amd64.deb
+
+      - name: Installed launcher smoke test
+        env:
+          HOME: ${{ runner.temp }}/ciphernes-home
+          XDG_DATA_HOME: ${{ runner.temp }}/ciphernes-data
+        run: |
+          ciphernes --help
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/Saves"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/SaveState"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/Screenshots"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/Videos"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/Cheats"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/TAS"
+          test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/bios"
+
+      - name: Upload Debian package
+        uses: actions/upload-artifact@v4
+        with:
+          name: CipherNES-Debian-amd64
+          path: |
+            dist/CipherNES-1.0.1-amd64.deb
+            dist/CipherNES-1.0.1-amd64.deb.sha256
