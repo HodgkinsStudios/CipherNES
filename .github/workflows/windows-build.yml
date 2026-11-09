@@ -1,0 +1,55 @@
+name: Windows build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: windows-build-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install MinGW-w64 runtime/toolchain
+        id: msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-SDL2
+            mingw-w64-x86_64-zlib
+
+      - name: Build CipherNES for Windows
+        shell: pwsh
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+        run: |
+          $env:PATH = "$env:MSYS2_LOCATION\mingw64\bin;$env:PATH"
+          .\build_windows.ps1
+          $exe = Resolve-Path ".\build\windows\bin\CipherNES.exe"
+          $portable = Join-Path $env:RUNNER_TEMP "CipherNES-standalone.exe"
+          Copy-Item $exe $portable
+          $env:CIPHERNES_RUNTIME_DIR = Join-Path $env:RUNNER_TEMP "ciphernes-user-data"
+          & $portable --help
+          if ($LASTEXITCODE -ne 0) { throw "Standalone executable --help failed" }
+          if (-not (Test-Path (Join-Path $env:CIPHERNES_RUNTIME_DIR "bios"))) { throw "BIOS directory was not created" }
+          $env:SDL_VIDEODRIVER = "dummy"
+          $env:SDL_AUDIODRIVER = "dummy"
+          & $portable --ui-preview (Join-Path $env:RUNNER_TEMP "ciphernes-windows.png")
+          if ($LASTEXITCODE -ne 0) { throw "Standalone executable UI failed" }
+          if (-not (Test-Path (Join-Path $env:RUNNER_TEMP "ciphernes-windows.png"))) { throw "UI preview missing" }
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: CipherNES-Windows
+          path: build/windows/bin/

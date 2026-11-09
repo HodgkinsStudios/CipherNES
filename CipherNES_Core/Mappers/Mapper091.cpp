@@ -1,0 +1,10 @@
+#include "Mapper091.h"
+#include "../state_io.h"
+void Mapper091::reset(){prg[0]=0;prg[1]=1;for(uint8_t&v:chr2k)v=0;irqCounter=0;irqReload=false;irqEnabled=false;irqActive=false;lastA12=false;lowDots=0;}
+bool Mapper091::cpuMapRead(uint16_t a,uint32_t&m){if(a<0x8000)return false;uint16_t c=prgBanks?uint16_t(prgBanks*2):1;uint8_t s=(a-0x8000)>>13;uint16_t p=s<2?prg[s]:(s==2?(c>1?c-2:0):c-1);m=uint32_t(p%c)*0x2000+(a&0x1FFF);return true;}
+bool Mapper091::cpuMapWrite(uint16_t a,uint32_t&m,uint8_t d){if(a<0x6000||a>0x7FFF)return false;switch(a&0x7003){case 0x6000:chr2k[0]=d;break;case 0x6001:chr2k[1]=d;break;case 0x6002:chr2k[2]=d;break;case 0x6003:chr2k[3]=d;break;case 0x7000:prg[0]=d&0xF;break;case 0x7001:prg[1]=d&0xF;break;case 0x7002:irqEnabled=false;irqActive=false;break;case 0x7003:irqCounter=0;irqReload=true;irqEnabled=true;irqActive=false;break;}m=0;return true;}
+bool Mapper091::ppuMapRead(uint16_t a,uint32_t&m){if(a>0x1FFF)return false;uint16_t c=chrBanks?uint16_t(chrBanks*4):4;uint8_t s=a>>11;m=uint32_t(chr2k[s]%c)*0x800+(a&0x7FF);return true;}bool Mapper091::ppuMapWrite(uint16_t a,uint32_t&m,uint8_t){return chrBanks==0&&ppuMapRead(a,m);}
+void Mapper091::clockIrq(){if(irqCounter==0||irqReload){irqCounter=7;irqReload=false;}else --irqCounter;if(irqCounter==0&&irqEnabled)irqActive=true;}
+void Mapper091::ppuAddressBus(uint16_t a){bool hi=(a&0x1000)!=0;if(!hi){if(lowDots<255)++lowDots;}else{if(!lastA12&&lowDots>=8)clockIrq();lowDots=0;}lastA12=hi;}
+void Mapper091::saveState(std::vector<uint8_t>&o)const{using namespace ciphernes_state;for(uint8_t v:prg)write_u8(o,v);for(uint8_t v:chr2k)write_u8(o,v);write_u8(o,irqCounter);write_bool(o,irqReload);write_bool(o,irqEnabled);write_bool(o,irqActive);write_bool(o,lastA12);write_u8(o,lowDots);}
+bool Mapper091::loadState(const uint8_t*&p,const uint8_t*e){using namespace ciphernes_state;for(uint8_t&v:prg)if(!read_u8(p,e,v))return false;for(uint8_t&v:chr2k)if(!read_u8(p,e,v))return false;return read_u8(p,e,irqCounter)&&read_bool(p,e,irqReload)&&read_bool(p,e,irqEnabled)&&read_bool(p,e,irqActive)&&read_bool(p,e,lastA12)&&read_u8(p,e,lowDots);}

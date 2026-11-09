@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+  <FileVersion major="1" minor="6" />
+  <Project>
+    <Option title="CipherNES Ubuntu" />
+    <Option compiler="gcc" />
+    <Build>
+      <Target title="Release">
+        <Option output="build/codeblocks/CipherNES" prefix_auto="0" extension_auto="0" />
+        <Option object_output="build/codeblocks/obj/" />
+        <Option type="1" />
+        <Option compiler="gcc" />
+        <Compiler>
+          <Add option="-std=gnu++11" />
+          <Add option="-O3" />
+          <Add option="-DNDEBUG" />
+          <Add option="-Wall" />
+          <Add directory="CipherNES_Core" />
+          <Add directory="CipherNES_Ubuntu" />
+        </Compiler>
+        <Linker>
+          <Add library="dl" />
+          <Add library="pthread" />
+        </Linker>
+      </Target>
+    </Build>
+    <Unit filename="CipherNES_Ubuntu/main_ubuntu.cpp" />
+    <Unit filename="CipherNES_Ubuntu/zip_rom_loader.cpp" />
+    <Unit filename="CipherNES_Core/apu2A03.cpp" />
+    <Unit filename="CipherNES_Core/bus.cpp" />
+    <Unit filename="CipherNES_Core/cartridge.cpp" />
+    <Unit filename="CipherNES_Core/cpu6502.cpp" />
+    <Unit filename="CipherNES_Core/game_genie.cpp" />
+    <Unit filename="CipherNES_Core/ciphernes_core.cpp" />
+    <Unit filename="CipherNES_Core/ppu2C02.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper000.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper001.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper002.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper003.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper004.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper005.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper006.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper007.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper009.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper010.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper011.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper013.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper015.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper016.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper017.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper018.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper019.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper020.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper210.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper022.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper023.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/MapperVrc6.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper028.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper032.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper033.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper034.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper053.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper064.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper065.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper066.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper067.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper068.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper069.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper070.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper071.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper075.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper077.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper078.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper079.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper080.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper082.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper087.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper091.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper097.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper099.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper105.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper111.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper113.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper130.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper160.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper180.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper184.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper188.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper185.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper193.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper222.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper232.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper234.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper073.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper083.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper085.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/MapperCommonBoards.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/MapperAdditionalBoards.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/MapperJY.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/MapperKaiser202.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/MapperMmc3Variant.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/MapperJalecoSimple.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/MapperMulticart.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/MapperNamco108.cpp" />
+    <Unit filename="CipherNES_Core/Mappers/Mapper252.cpp" />
+  </Project>
+</CodeBlocks_project_file>

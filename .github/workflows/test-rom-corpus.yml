@@ -1,0 +1,60 @@
+name: Test ROM corpus (manual)
+
+# Manual-only: test ROMs are third-party material. Before publishing this
+# repository publicly, ensure you have redistribution permission.
+on:
+  workflow_dispatch:
+    inputs:
+      frames:
+        description: 'Frames per NTSC iNES ROM (execution/save-state smoke only)'
+        required: true
+        default: '600'
+        type: string
+      jobs:
+        description: 'Number of parallel ROM test workers'
+        required: true
+        default: '4'
+        type: string
+      run_accuracycoin:
+        description: 'Run full AccuracyCoin and upload its result screen (manual grading)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  rom-corpus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential libsdl2-2.0-0 zlib1g
+      - name: Verify tracked test ROMs and SHA-256 manifest
+        run: python3 .github/ci/verify_test_roms.py
+      - name: Build Ubuntu emulator
+        run: CIPHERNES_LTO=0 CIPHERNES_JOBS=4 ./build_ubuntu.sh
+      - name: Run NTSC suite (274 ROMs; exclude 15 PAL and 1 invalid)
+        env:
+          SDL_AUDIODRIVER: dummy
+          SDL_VIDEODRIVER: dummy
+          ROM_FRAMES: ${{ inputs.frames }}
+          ROM_JOBS: ${{ inputs.jobs }}
+        run: |
+          python3 .github/ci/run_ntsc_baseline.py TEST_ROMS/nes-test-roms --frames "$ROM_FRAMES" --jobs "$ROM_JOBS" --timeout 180 --output build/test_results/ntsc_baseline.json
+      - name: Full AccuracyCoin run (final PPM requires visual verification)
+        if: ${{ inputs.run_accuracycoin }}
+        env:
+          SDL_AUDIODRIVER: dummy
+          SDL_VIDEODRIVER: dummy
+        run: |
+          ./tests/run_accuracycoin.sh TEST_ROMS/AccuracyCoin.nes build/test_results/accuracycoin_final.ppm
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CipherNES-TestROM-Results
+          path: build/test_results/
+          if-no-files-found: warn

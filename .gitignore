@@ -1,0 +1,92 @@
+# Build output
+/dist/
+/build/
+/bin/
+/obj/
+*.o
+*.so
+*.dll
+*.dylib
+*.exe
+*.a
+*.dll.a
+*.app/
+*.dSYM/
+*.deb
+*.deb.sha256
+*.flatpak
+*.flatpak.sha256
+*.AppImage
+*.AppImage.sha256
+/squashfs-root/
+/.flatpak-builder/
+
+# Runtime/user data
+/runtime/
+/Saves/
+/SaveState/
+/Screenshots/
+/TAS/
+/Cheats/
+/logs/
+/config/
+roms/
+saves/
+*.SAV
+*.sav
+*.state
+*.nss
+*.png
+*.avi
+
+# User-supplied firmware and test fixtures
+/bios/disksys.rom
+*.nes
+*.fds
+*.nsf
+*.unf
+*.unif
+
+# Local editor/system files
+*.user
+*.layout
+*.depend
+.DS_Store
+*~
+
+# Generated Python test cache
+__pycache__/
+*.pyc
+
+# Generated per-user frontend configuration
+/CipherNES.cfg
+
+# Local ROM inventories, checkpoint artifacts and developer scratch
+/ROMS_TESTING/
+/ROM_TESTING/
+/romdump/
+/checkpoints/
+/CP0*/
+/*_FULL_SOURCE.zip
+/*_EVIDENCE_ROM_FREE.zip
+*.zip.part[0-9][0-9][0-9]
+*.log
+*.tmp
+.cache/
+.vscode/
+.idea/
+
+# Explicitly version owner-supplied test fixtures under TEST_ROMS only.
+# ROMs elsewhere remain ignored. Review redistribution rights before public publishing.
+!/TEST_ROMS/
+!/TEST_ROMS/**/*.nes
+!/TEST_ROMS/**/*.NES
+!/TEST_ROMS/**/*.fds
+!/TEST_ROMS/**/*.nsf
+!/TEST_ROMS/**/*.unif
+!/TEST_ROMS/**/nestest.log
+
+# GitHub README assets (runtime PNG captures remain ignored)
+!/assets/
+!/assets/screenshots/
+!/assets/screenshots/accuracycoin-147-of-147.png

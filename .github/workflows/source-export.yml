@@ -1,0 +1,31 @@
+name: Export release source
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    name: Exact committed source ZIP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout commit
+        uses: actions/checkout@v4
+      - name: Zip tracked ROM-free release source
+        shell: bash
+        run: |
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          mkdir -p "dist/CipherNES-${VERSION}-Source"
+          # The TEST_ROMS tree is an optional private development fixture set.
+          # Never bundle those third-party images into standard release source.
+          git ls-files -z -- . ':(exclude)TEST_ROMS/**' | tar --null -T - -cf - | tar -xf - -C "dist/CipherNES-${VERSION}-Source"
+          cd dist
+          zip -qr "CipherNES-${VERSION}-GitHub-Source.zip" "CipherNES-${VERSION}-Source"
+      - name: Upload exact source
+        uses: actions/upload-artifact@v4
+        with:
+          name: CipherNES-Exact-Source
+          path: dist/CipherNES-*-GitHub-Source.zip
+          if-no-files-found: error
+          retention-days: 30

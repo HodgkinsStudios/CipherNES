@@ -1,0 +1,8 @@
+# Test fixtures are intentionally tracked here, even though .nes and .log
+# files are ignored elsewhere in the project.
+!*.nes
+!*.NES
+!*.fds
+!*.nsf
+!*.unif
+!nestest.log

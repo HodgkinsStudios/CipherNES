@@ -1,0 +1,5 @@
+@echo off
+rem Created by Jacob Hodgkins
+setlocal
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0build_windows.ps1" %*
+exit /b %ERRORLEVEL%
