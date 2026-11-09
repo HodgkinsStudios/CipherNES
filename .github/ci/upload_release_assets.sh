@@ -21,8 +21,8 @@ for attempt in 1 2 3 4 5 6 7 8 9 10; do
     sleep 4
 done
 gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null || { echo 'Could not create or access draft release.' >&2; exit 1; }
-# Never overwrite v1.0.0 assets with bits from a later commit while its tag is unchanged.
-tag_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" --jq '.object.sha')"
+# Draft releases can have no Git tag ref until published; inspect the release target instead.
+tag_sha="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json targetCommitish --jq '.targetCommitish')"
 if [[ "$tag_sha" != "$GITHUB_SHA" ]]; then
     echo "Release tag ${TAG} points to ${tag_sha}, not ${GITHUB_SHA}; skipping stale-release upload."
     exit 0
