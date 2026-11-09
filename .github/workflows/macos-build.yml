@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: write
+
 concurrency:
   group: macos-build-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
@@ -62,11 +65,10 @@ jobs:
           perl -e 'alarm 15; exec @ARGV' -- \
             build/macos/CipherNES-macOS-${{ matrix.arch }}-single-file --sdl-runtime-test
 
-      - name: Upload macOS build
-        uses: actions/upload-artifact@v4
-        with:
-          name: CipherNES-macOS-${{ matrix.arch }}
-          path: |
-            build/macos/CipherNES-macOS-${{ matrix.arch }}.zip
-            build/macos/CipherNES-macOS-${{ matrix.arch }}-single-file
-            build/macos/SHA256SUMS.txt
+      - name: Upload tested files to draft GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash .github/ci/upload_release_assets.sh "build/macos/CipherNES-macOS-${{ matrix.arch }}.zip" "build/macos/CipherNES-macOS-${{ matrix.arch }}-single-file"

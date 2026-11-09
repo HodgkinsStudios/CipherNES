@@ -1,8 +1,8 @@
-# CipherNES 1.0.0 — cleaned source release
+# CipherNES 1.0.0 — initial public release
 
 **HodgkinsStudios** · NTSC NES/Famicom emulator · source prepared November 8, 2026.
 
-This release is the cleaned, GitHub-ready presentation of the CP021 emulator implementation. The previous public `1.0.0`/`1.0.1` releases are historical; **do not replace an existing remote tag without an explicit release-management decision**. The source release version is intentionally set to `1.0.0` at the owner's request.
+This is the initial public CipherNES v1.0.0 release, built from a single shared hardware core for Ubuntu, Windows and macOS.
 
 ## Features
 
@@ -23,6 +23,6 @@ This release is the cleaned, GitHub-ready presentation of the CP021 emulator imp
 - `nmi_sync/demo_ntsc.nes` shows a three-pixel offset against the supplied source's reference tolerance, and is **not** certified as passing.
 - Game-specific and hardware-variant behavior may remain incomplete, including MMC5 analog audio and fine rendering timing.
 - The current core state format is **v11**, and the core C API is **v11**. Do not assume compatibility with older public `1.0.0` or `1.0.1` save-state files.
-- Windows/macOS builds and distributable packages require CI/device validation from this exact tree before publication.
+- Windows/macOS builds pass their hosted compilation and headless smoke tests; physical-device graphical, audio and controller behavior still requires manual verification.
 
-The release ZIP does **not** contain ROMs, copyrighted FDS firmware, private screenshots, or compiled builds.
+The standalone source ZIP excludes ROMs and FDS firmware. Prebuilt platform binaries are attached separately to the draft GitHub Release.

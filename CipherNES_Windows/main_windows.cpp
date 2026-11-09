@@ -2981,7 +2981,8 @@ int App::runControllerSelfTest() {
     return 0;
 }
 
-int validateCore(const std::string& rom, int frames, bool benchmark) {
+int validateCore(const std::string& rom, int frames, bool benchmark,
+                 const std::string& barcode=std::string(), int barcodeFrame=0, int mmc3Profile=-1) {
     std::cout << ciphernes_get_core_version_string() << "\nAPI version: " << ciphernes_get_api_version() << "\n";
     if (ciphernes_get_api_version() != CIPHERNES_API_VERSION) { std::cerr << "Core/header API mismatch\n"; return 2; }
     CIPHERNES_Handle* core = ciphernes_create(); if (!core) return 3;
@@ -2996,15 +2997,49 @@ int validateCore(const std::string& rom, int frames, bool benchmark) {
         std::cerr << "Could not load validation ROM: " << rom << "\n"; ciphernes_destroy(core); return 4;
     }
     cleanupPreparedRom(prepared);
-    ciphernes_set_audio_sample_rate(core, 44100.0); std::vector<int16_t> audio(8192); uint64_t clocks = 0;
+    if (mmc3Profile >= 0) {
+        if (!ciphernes_set_mmc3_alternate_irq_revision(core, mmc3Profile)) {
+            std::cerr << "The requested MMC3 IRQ revision requires a mapper 4 cartridge.\n";
+            ciphernes_destroy(core); return 6;
+        }
+        std::cout << "MMC3 IRQ revision override: "
+                  << (mmc3Profile ? "NEC/alternate" : "Sharp/default") << "\n";
+    }
+    ciphernes_set_audio_sample_rate(core, 44100.0);
+    std::vector<int16_t> audio(8192); uint64_t clocks = 0;
+    uint64_t emittedAudioSamples = 0, nonzeroAudioSamples = 0; int maxAbsAudio = 0;
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    for (int i = 0; i < frames; ++i) { clocks += ciphernes_run_frame(core); ciphernes_take_audio_samples_i16(core, &audio[0], audio.size()); }
+    for (int i = 0; i < frames; ++i) {
+        if (!barcode.empty() && i == barcodeFrame) {
+            if (!ciphernes_queue_datach_barcode(core,barcode.c_str())) {
+                std::cerr << "Datach barcode rejected (requires mapper 157 and valid EAN/UPC digits).\n";
+                ciphernes_destroy(core); return 6;
+            }
+            std::cout << "Datach barcode accepted at frame " << i << ": " << barcode << "\n";
+        }
+        clocks += ciphernes_run_frame(core);
+        const int n = ciphernes_take_audio_samples_i16(core, &audio[0], audio.size());
+        if (n > 0) {
+            emittedAudioSamples += unsigned(n);
+            for (int j=0;j<n;++j) {
+                const int magnitude = std::abs(int(audio[j]));
+                if (magnitude) ++nonzeroAudioSamples;
+                if (magnitude > maxAbsAudio) maxAbsAudio = magnitude;
+            }
+        }
+    }
     double seconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
     const uint32_t* frame = ciphernes_get_framebuffer(core); uint32_t frameCrc = crc32(frame, NES_W * NES_H * 4u);
+    std::vector<uint32_t> distinct(frame, frame + NES_W*NES_H);
+    std::sort(distinct.begin(), distinct.end());
+    const size_t distinctColors = size_t(std::unique(distinct.begin(), distinct.end()) - distinct.begin());
     uint32_t stateSize = ciphernes_get_state_size(core); std::vector<unsigned char> state(stateSize + 4096u);
     uint32_t written = ciphernes_save_state(core, &state[0], state.size()); bool reload = written && ciphernes_load_state(core, &state[0], written);
     std::cout << "ROM: " << rom << (hasExtension(rom, ".zip") ? " (entry " + zipEntry + ")" : std::string()) << "\nFrames: " << frames << "\nMaster clocks: " << clocks << "\nFramebuffer CRC32: ";
     char crcText[16]; std::snprintf(crcText, sizeof(crcText), "%08X", frameCrc); std::cout << crcText << "\n";
+    std::cout << "Framebuffer distinct colors: " << distinctColors << "\n";
+    std::cout << "Audio emitted samples: " << emittedAudioSamples
+              << ", nonzero: " << nonzeroAudioSamples << ", peak magnitude: " << maxAbsAudio << "\n";
     std::cout << "State bytes: " << written << "\nState round-trip: " << (reload ? "PASS" : "FAIL") << "\n";
     std::cout << "Elapsed: " << seconds << " s, emulated FPS: " << (seconds > 0 ? frames / seconds : 0) << "\n";
     ciphernes_destroy(core);
@@ -3042,10 +3077,13 @@ bool enterRuntimeDirectory() {
 void printUsage() {
     std::cout << "CipherNES Windows\n"
               << "Usage: CipherNES [game.nes|disk.fds|disk.qd|archive.zip]\n"
-              << "       CipherNES --validate [game.nes|disk.fds|disk.qd|archive.zip] [frames]\n"
-              << "       CipherNES --benchmark [game.nes|disk.fds|disk.qd|archive.zip] [frames]\n"
+              << "       CipherNES --validate [game.nes|disk.fds|disk.qd|archive.zip] [frames] [--mmc3-irq=nec|sharp]\n"
+              << "       CipherNES --benchmark [game.nes|disk.fds|disk.qd|archive.zip] [frames] [--mmc3-irq=nec|sharp]\n"
+              << "       CipherNES --barcode UPC_OR_EAN_DIGITS game.nes [frames] [scan-frame]  (headless)\n"
               << "       CipherNES --controller-test\n"
+              << "       CipherNES --tas-branch-test owned-rom.nes\n"
               << "       CipherNES --ui-preview output.png [game.nes|disk.fds|disk.qd|archive.zip]\n"
+              << "       CipherNES --sdl-runtime-test\n"
               << "SDL2 and zlib are bundled inside this executable. Validation and benchmarks are headless.\n";
 }
 
@@ -3055,14 +3093,49 @@ int main(int argc, char** argv) {
     std::string command = argc > 1 ? argv[1] : "";
     std::string suppliedPath, previewOutput, previewRom;
     if (!command.empty() && command[0] != '-') suppliedPath = absoluteBeforeChdir(command);
-    else if ((command == "--validate" || command == "--benchmark") && argc > 2) suppliedPath = absoluteBeforeChdir(argv[2]);
+    else if ((command == "--validate" || command == "--benchmark" || command == "--tas-branch-test") && argc > 2) suppliedPath = absoluteBeforeChdir(argv[2]);
+    else if (command == "--barcode" && argc > 3) suppliedPath = absoluteBeforeChdir(argv[3]);
     else if(command=="--ui-preview"&&argc>2){previewOutput=absoluteBeforeChdir(argv[2]);if(argc>3)previewRom=absoluteBeforeChdir(argv[3]);}
     if (!enterRuntimeDirectory()) return 1;
     if (command == "--help" || command == "-h") { printUsage(); return 0; }
+    if (command == "--sdl-runtime-test") {
+        // Probe all SDL2 symbols and embedded shared-library dependencies without
+        // initializing macOS HID, Cocoa windows or the graphics backend. This is
+        // safe for headless CI; a real desktop launch must still be tested.
+        SDLApi api;
+        if (!api.load()) {
+            std::cerr << "CipherNES: SDL2 runtime loading or symbol verification failed.\n";
+            return 1;
+        }
+        std::cout << "CipherNES: SDL2 runtime loaded and required symbols resolved.\n";
+        return 0;
+    }
+    if (command == "--barcode") {
+        if (argc<4) {printUsage();return 2;}
+        const int frames=argc>4 ? std::max(1,std::atoi(argv[4])) : 180;
+        const int scanFrame=argc>5 ? std::max(0,std::min(frames-1,std::atoi(argv[5]))) : std::min(60,frames-1);
+        return validateCore(suppliedPath,frames,false,argv[2],scanFrame);
+    }
     if (command == "--validate" || command == "--benchmark") {
         std::string rom = suppliedPath.empty() ? "TestRoms/nestest.nes" : suppliedPath;
-        int frames = argc > 3 ? std::max(1, std::atoi(argv[3])) : (command == "--benchmark" ? 600 : 180);
-        return validateCore(rom, frames, command == "--benchmark");
+        int frames = (argc > 3 && argv[3][0] != '-') ? std::max(1, std::atoi(argv[3])) : (command == "--benchmark" ? 600 : 180);
+        int mmc3Profile = -1; // Keep cartridge metadata or the established default.
+        for (int i=3;i<argc;++i) {
+            const std::string arg=argv[i];
+            if (arg == "--mmc3-irq=nec" || arg == "--mmc3-irq=old") mmc3Profile=1;
+            else if (arg == "--mmc3-irq=sharp" || arg == "--mmc3-irq=new") mmc3Profile=0;
+            else if (arg.size() && arg[0] == '-') {
+                std::cerr << "Unknown validation option: " << arg << "\n";
+                return 2;
+            }
+        }
+        return validateCore(rom, frames, command == "--benchmark", std::string(),0,mmc3Profile);
+    }
+    if (command == "--tas-branch-test") {
+        if (suppliedPath.empty()) { printUsage(); return 2; }
+        App app;
+        if (!app.initialize()) return 1;
+        return app.runTasBranchSelfTest(suppliedPath);
     }
     if (command == "--controller-test") {
         if (!std::getenv("SDL_VIDEODRIVER")) _putenv_s("SDL_VIDEODRIVER", "dummy");

@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: write
+
 concurrency:
   group: ubuntu-build-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
@@ -23,7 +26,7 @@ jobs:
         run: python3 .github/ci/check_release_version.py
 
       - name: Build CipherNES for Ubuntu
-        run: ./build_ubuntu.sh
+        run: ./package_release.sh
 
       - name: Native Ubuntu CLI smoke check
         run: build/ubuntu/bin/CipherNES --help
@@ -53,8 +56,10 @@ jobs:
           ./.github/ci/benchmark_timeline.sh "$RUNNER_TEMP/ciphernes-test.nes" 120
           build/ubuntu/bin/CipherNES --validate "$RUNNER_TEMP/ciphernes-test.nes" 180
 
-      - name: Upload Ubuntu build
-        uses: actions/upload-artifact@v4
-        with:
-          name: CipherNES-Ubuntu
-          path: build/ubuntu/bin/
+      - name: Upload tested files to draft GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash .github/ci/upload_release_assets.sh "dist/CipherNES-1.0.0-Ubuntu-x86_64.zip" "build/ubuntu/bin/CipherNES"

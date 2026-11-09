@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: write
+
 concurrency:
   group: appimage-package-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
@@ -74,10 +77,10 @@ jobs:
           test -f squashfs-root/ciphernes.svg
           test -L squashfs-root/.DirIcon
 
-      - name: Upload AppImage
-        uses: actions/upload-artifact@v4
-        with:
-          name: CipherNES-AppImage-x86_64
-          path: |
-            dist/CipherNES-1.0.0-x86_64.AppImage
-            dist/CipherNES-1.0.0-x86_64.AppImage.sha256
+      - name: Upload tested files to draft GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash .github/ci/upload_release_assets.sh "dist/CipherNES-1.0.0-x86_64.AppImage" "dist/CipherNES-1.0.0-x86_64.AppImage.sha256"

@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: write
+
 concurrency:
   group: debian-package-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
@@ -49,10 +52,10 @@ jobs:
           test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/TAS"
           test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/bios"
 
-      - name: Upload Debian package
-        uses: actions/upload-artifact@v4
-        with:
-          name: CipherNES-Debian-amd64
-          path: |
-            dist/CipherNES-1.0.0-amd64.deb
-            dist/CipherNES-1.0.0-amd64.deb.sha256
+      - name: Upload tested files to draft GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash .github/ci/upload_release_assets.sh "dist/CipherNES-1.0.0-amd64.deb" "dist/CipherNES-1.0.0-amd64.deb.sha256"

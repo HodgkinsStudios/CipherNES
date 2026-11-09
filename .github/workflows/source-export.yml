@@ -4,7 +4,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   source:
     name: Exact committed source ZIP
@@ -22,10 +22,10 @@ jobs:
           git ls-files -z -- . ':(exclude)TEST_ROMS/**' | tar --null -T - -cf - | tar -xf - -C "dist/CipherNES-${VERSION}-Source"
           cd dist
           zip -qr "CipherNES-${VERSION}-GitHub-Source.zip" "CipherNES-${VERSION}-Source"
-      - name: Upload exact source
-        uses: actions/upload-artifact@v4
-        with:
-          name: CipherNES-Exact-Source
-          path: dist/CipherNES-*-GitHub-Source.zip
-          if-no-files-found: error
-          retention-days: 30
+      - name: Upload tested files to draft GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash .github/ci/upload_release_assets.sh "dist/CipherNES-1.0.0-GitHub-Source.zip"

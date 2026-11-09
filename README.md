@@ -145,3 +145,8 @@ See the [NTSC 274-ROM baseline](docs/NTSC_TEST_ROM_BASELINE.md), [test ROM docum
 CipherNES source code is released under the [MIT License](LICENSE). Copyright © 2026 HodgkinsStudios. Third-party test ROMs, firmware, and other external materials are **not** covered by that grant unless their own licenses say so.
 
 *Nintendo, Famicom, and NES are trademarks of their respective owners. CipherNES is an independent emulator project and is not affiliated with or endorsed by Nintendo.*
+
+
+## Release downloads
+
+Prebuilt Ubuntu, Windows, macOS Intel and Apple Silicon, AppImage, Debian and Flatpak files are assembled by GitHub Actions into a **draft v1.0.0 release**, separate from the repository's test ROMs. Build CI publishes draft assets directly to GitHub Releases rather than GitHub Actions artifact storage. Review the native-build smoke test results and perform manual GUI/controller validation before publishing. See [release asset guide](docs/RELEASE_ASSETS.md).
