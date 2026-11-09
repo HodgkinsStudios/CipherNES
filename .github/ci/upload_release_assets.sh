@@ -21,11 +21,23 @@ for attempt in 1 2 3 4 5 6 7 8 9 10; do
     sleep 4
 done
 gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null || { echo 'Could not create or access draft release.' >&2; exit 1; }
-# Draft releases can have no Git tag ref until published; inspect the release target instead.
-tag_sha="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json targetCommitish --jq '.targetCommitish')"
-if [[ "$tag_sha" != "$GITHUB_SHA" ]]; then
-    echo "Release tag ${TAG} points to ${tag_sha}, not ${GITHUB_SHA}; skipping stale-release upload."
+# Draft releases need not have a Git tag ref until publication.
+# Ignore builds that were superseded by another push while this workflow ran.
+main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+if [[ "$main_sha" != "$GITHUB_SHA" ]]; then
+    echo "Superseded workflow SHA $GITHUB_SHA (main is $main_sha); skipping upload."
     exit 0
+fi
+target_sha="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json targetCommitish --jq '.targetCommitish')"
+if [[ "$target_sha" != "$GITHUB_SHA" ]]; then
+    draft="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq '.isDraft')"
+    if [[ "$draft" != "true" ]]; then
+        echo "Published release $TAG is immutable; not replacing assets from $target_sha"
+        exit 0
+    fi
+    id="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json databaseId --jq '.databaseId')"
+    gh api -X PATCH "repos/${GITHUB_REPOSITORY}/releases/$id" -f target_commitish="$GITHUB_SHA" >/dev/null
+    echo "Updated draft release target from $target_sha to $GITHUB_SHA"
 fi
 echo "Uploading $# release file(s) to draft ${TAG} at ${GITHUB_SHA}"
 gh release upload "$TAG" "$@" --repo "$GITHUB_REPOSITORY" --clobber
