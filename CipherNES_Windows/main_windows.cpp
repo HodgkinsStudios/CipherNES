@@ -3087,6 +3087,7 @@ void printUsage() {
               << "SDL2 and zlib are bundled inside this executable. Validation and benchmarks are headless.\n";
 }
 
+
 } // namespace
 
 int main(int argc, char** argv) {
@@ -3099,12 +3100,9 @@ int main(int argc, char** argv) {
     if (!enterRuntimeDirectory()) return 1;
     if (command == "--help" || command == "-h") { printUsage(); return 0; }
     if (command == "--sdl-runtime-test") {
-        // Probe all SDL2 symbols and embedded shared-library dependencies without
-        // initializing macOS HID, Cocoa windows or the graphics backend. This is
-        // safe for headless CI; a real desktop launch must still be tested.
         SDLApi api;
         if (!api.load()) {
-            std::cerr << "CipherNES: SDL2 runtime loading or symbol verification failed.\n";
+            std::cerr << "CipherNES: bundled SDL2 runtime loading or symbol verification failed.\n";
             return 1;
         }
         std::cout << "CipherNES: SDL2 runtime loaded and required symbols resolved.\n";

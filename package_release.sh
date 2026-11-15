@@ -11,7 +11,7 @@ rm -rf "$DIST"
 mkdir -p "$STAGE/docs"
 cp "$ROOT/build/ubuntu/bin/CipherNES" "$STAGE/"
 cp "$ROOT/LICENSE" "$ROOT/THIRD_PARTY_NOTICES.md" "$ROOT/CHANGELOG.md" "$ROOT/RELEASE_NOTES_${VERSION}.md" "$ROOT/VERSION" "$STAGE/"
-cp "$ROOT/docs/VALIDATION.md" "$ROOT/docs/FEATURES.md" "$STAGE/docs/"
+cp "$ROOT/docs/TESTING.md" "$ROOT/docs/USER_GUIDE.md" "$STAGE/docs/"
 
 cat > "$STAGE/run_ciphernes.sh" <<'RUNEOF'
 #!/usr/bin/env bash
@@ -29,14 +29,14 @@ Created by Jacob Hodgkins.
 
 This is the prebuilt Ubuntu release of CipherNES $VERSION, targeting NTSC timing.
 
-## Accuracy
+## Recorded testing scope
 
-- Fresh cleaned Ubuntu v1.0.0 build: AccuracyCoin full run displayed **147 / 147 PASS**, reached frame 4,159 with successful save-state roundtrip.
-- Synthetic mapper checks on the CP021 implementation: **156 IDs**, **7,156 assertions passing**. Real hardware accuracy is not established for every mapper.
-- A historical 289-ROM execution/savestate run does NOT constitute 289 internal test passes. One three-pixel NMI visual sync mismatch remains.
-- Windows/macOS and other platform packages must pass their CI/device validation from this exact release tree.
+- Latest verified Ubuntu AccuracyCoin final screen: **147 / 147 PASS** (not rerun by packaging).
+- Documented NTSC ledger: **197 PASS / 7 FAIL / 70 UNVERIFIED**. Some passes are functional demonstrations, not full hardware certifications.
+- Synthetic mapper gate: **156 registered IDs / 7,156 focused assertions**, not all boards certified.
+- Platform-specific builds and final QA must be rerun from the exact approved release commit.
 
-See \`docs/VALIDATION.md\` for the full certification record.
+See \`docs/TESTING.md\` for limitations and reproducibility.
 
 ## Runtime requirements
 
@@ -83,14 +83,24 @@ mkdir -p "$SRC_STAGE"
         --exclude='./SaveState' --exclude='./TAS' --exclude='./Saves' \
         --exclude='./Screenshots' --exclude='./Cheats' --exclude='./config' \
         --exclude='./logs' --exclude='./roms' --exclude='./saves' --exclude='./runtime' \
-        --exclude='./bios/disksys.rom' \
-        --exclude='*.nes' --exclude='*.fds' --exclude='*.qd' \
-        --exclude='*.nss' --exclude='*.ci' --exclude='*.avi' \
+        --exclude='./bios/disksys.rom' --exclude='./TEST_ROMS' \
+        --exclude='*.nes' --exclude='*.NES' --exclude='*.fds' --exclude='*.FDS' \
+        --exclude='*.nsf' --exclude='*.NSF' --exclude='*.unif' --exclude='*.UNIF' --exclude='*.qd' \
+        --exclude='*.nss' --exclude='*.ci' --exclude='*.avi' --exclude='*.ppm' \
+        --exclude='*.zip' --exclude='*.7z' --exclude='*.png' --exclude='*.jpg' \
+        --exclude='*.exe' --exclude='*.dll' --exclude='*.a' --exclude='*.o' --exclude='*.so' \
         --exclude='*.state' --exclude='*.SAV' --exclude='*.sav' \
-        --exclude='./LOCAL_REPAIR_HANDOFF_2026-10-21.md' \
+        --exclude='./CP0*' --exclude='./checkpoints' --exclude='./ROMDUMP*' \
         --exclude='./*.user' --exclude='./*.layout' --exclude='./*.depend' \
         --exclude='__pycache__' --exclude='*.pyc' --exclude='.DS_Store' -cf - .
 ) | (cd "$SRC_STAGE" && tar -xf -)
+# Keep fixture metadata in source export without bundling any third-party ROMs.
+mkdir -p "$SRC_STAGE/TEST_ROMS"
+cp "$ROOT/TEST_ROMS/README.md" "$ROOT/TEST_ROMS/ROM_MANIFEST.csv" "$ROOT/TEST_ROMS/.gitignore" "$SRC_STAGE/TEST_ROMS/"
+# The README and testing guide embed this verified, owner-produced screenshot.
+# Keep it while continuing to exclude arbitrary PNG dumps from source exports.
+mkdir -p "$SRC_STAGE/assets/screenshots"
+cp "$ROOT/assets/screenshots/accuracycoin-147-of-147.png" "$SRC_STAGE/assets/screenshots/"
 (
     cd "$DIST"
     zip -qr "CipherNES-$VERSION-Source.zip" "$(basename "$SRC_STAGE")"

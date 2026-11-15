@@ -3055,7 +3055,8 @@ int App::runControllerSelfTest() {
 }
 
 int validateCore(const std::string& rom, int frames, bool benchmark,
-                 const std::string& barcode=std::string(), int barcodeFrame=0, int mmc3Profile=-1) {
+                 const std::string& barcode=std::string(), int barcodeFrame=0, int mmc3Profile=-1,
+                 const std::string& captureOutput=std::string()) {
     std::cout << ciphernes_get_core_version_string() << "\nAPI version: " << ciphernes_get_api_version() << "\n";
     if (ciphernes_get_api_version() != CIPHERNES_API_VERSION) { std::cerr << "Core/header API mismatch\n"; return 2; }
     CIPHERNES_Handle* core = ciphernes_create(); if (!core) return 3;
@@ -3103,6 +3104,7 @@ int validateCore(const std::string& rom, int frames, bool benchmark,
     }
     double seconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
     const uint32_t* frame = ciphernes_get_framebuffer(core); uint32_t frameCrc = crc32(frame, NES_W * NES_H * 4u);
+    const bool captureOk = captureOutput.empty() || writePng(captureOutput, frame, NES_W, NES_H);
     std::vector<uint32_t> distinct(frame, frame + NES_W*NES_H);
     std::sort(distinct.begin(), distinct.end());
     const size_t distinctColors = size_t(std::unique(distinct.begin(), distinct.end()) - distinct.begin());
@@ -3113,10 +3115,11 @@ int validateCore(const std::string& rom, int frames, bool benchmark,
     std::cout << "Framebuffer distinct colors: " << distinctColors << "\n";
     std::cout << "Audio emitted samples: " << emittedAudioSamples
               << ", nonzero: " << nonzeroAudioSamples << ", peak magnitude: " << maxAbsAudio << "\n";
+    if (!captureOutput.empty()) std::cout << "Screenshot: " << (captureOk ? "SAVED " : "FAILED ") << captureOutput << "\n";
     std::cout << "State bytes: " << written << "\nState round-trip: " << (reload ? "PASS" : "FAIL") << "\n";
     std::cout << "Elapsed: " << seconds << " s, emulated FPS: " << (seconds > 0 ? frames / seconds : 0) << "\n";
     ciphernes_destroy(core);
-    if (!reload || frameCrc == 0) return 5;
+    if (!reload || frameCrc == 0 || !captureOk) return 5;
     if (benchmark) std::cout << "Real-time multiple: " << (seconds > 0 ? (frames / seconds) / NTSC_FPS : 0) << "x\n";
     return 0;
 }
@@ -3150,6 +3153,7 @@ void printUsage() {
     std::cout << "CipherNES " << PLATFORM_DISPLAY_NAME << "\n"
               << "Usage: CipherNES [game.nes|disk.fds|disk.qd|archive.zip]\n"
               << "       CipherNES --validate [game.nes|disk.fds|disk.qd|archive.zip] [frames] [--mmc3-irq=nec|sharp]\n"
+              << "       CipherNES --capture-image game.nes screenshot.png [frames]  (headless)\n"
               << "       CipherNES --benchmark [game.nes|disk.fds|disk.qd|archive.zip] [frames] [--mmc3-irq=nec|sharp]\n"
               << "       CipherNES --barcode UPC_OR_EAN_DIGITS game.nes [frames] [scan-frame]  (headless)\n"
               << "       CipherNES --controller-test\n"
@@ -3169,7 +3173,7 @@ int main(int argc, char** argv) {
     std::string command = argc > 1 ? argv[1] : "";
     std::string suppliedPath, previewOutput, previewRom;
     if (!command.empty() && command[0] != '-') suppliedPath = absoluteBeforeChdir(command);
-    else if ((command == "--validate" || command == "--benchmark" || command == "--tas-branch-test") && argc > 2) suppliedPath = absoluteBeforeChdir(argv[2]);
+    else if ((command == "--validate" || command == "--benchmark" || command == "--tas-branch-test" || command == "--capture-image") && argc > 2) suppliedPath = absoluteBeforeChdir(argv[2]);
     else if (command == "--barcode" && argc > 3) suppliedPath = absoluteBeforeChdir(argv[3]);
     else if(command=="--ui-preview"&&argc>2){previewOutput=absoluteBeforeChdir(argv[2]);if(argc>3)previewRom=absoluteBeforeChdir(argv[3]);}
     if (!enterRuntimeDirectory()) return 1;
@@ -3191,6 +3195,12 @@ int main(int argc, char** argv) {
         const int frames=argc>4 ? std::max(1,std::atoi(argv[4])) : 180;
         const int scanFrame=argc>5 ? std::max(0,std::min(frames-1,std::atoi(argv[5]))) : std::min(60,frames-1);
         return validateCore(suppliedPath,frames,false,argv[2],scanFrame);
+    }
+    if (command == "--capture-image") {
+        if (argc < 4) { printUsage(); return 2; }
+        const std::string capturePath = absoluteBeforeChdir(argv[3]);
+        const int frames = (argc > 4) ? std::max(1, std::atoi(argv[4])) : 240;
+        return validateCore(suppliedPath, frames, false, std::string(), 0, -1, capturePath);
     }
     if (command == "--validate" || command == "--benchmark") {
         std::string rom = suppliedPath.empty() ? "TestRoms/nestest.nes" : suppliedPath;

@@ -1049,7 +1049,8 @@ void APU2A03::cpuWrite(uint16_t addr, uint8_t data) {
         case 0x400B:
             tri.reg3 = data;
             tri.timer = (tri.timer & 0x00FF) | (uint16_t(data & 0x07) << 8);
-            tri.seqStep = 0;
+            // Unlike pulse channels, a $400B write must preserve the
+            // triangle sequencer phase; hardware cannot restart it.
             tri.linearReload = true;
             if (tri.enabled) {
                 const bool collision = halfFrameWillClockOnNextCpuCycle();

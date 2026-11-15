@@ -10,5 +10,5 @@ Categories=Game;Emulator;
 Keywords=NES;Famicom;Emulator;Retro;
 StartupNotify=true
 X-AppImage-Name=CipherNES
-X-AppImage-Version=1.0.0
+X-AppImage-Version=1.0.1
 X-AppImage-Arch=x86_64

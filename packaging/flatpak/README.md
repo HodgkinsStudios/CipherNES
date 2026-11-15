@@ -23,6 +23,8 @@ Flathub configured:
 flatpak install flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08
 ```
 
+The build script creates a temporary ROM-free archive from the local source checkout, so the Flatpak build does not require anonymous GitHub access (and works when the repository is private).
+
 Then build from the repository root:
 
 ```bash
@@ -32,13 +34,13 @@ Then build from the repository root:
 Output:
 
 ```text
-dist/CipherNES-1.0.0-x86_64.flatpak
+dist/CipherNES-1.0.1-x86_64.flatpak
 ```
 
 ## Install
 
 ```bash
-flatpak install --user ./dist/CipherNES-1.0.0-x86_64.flatpak
+flatpak install --user ./dist/CipherNES-1.0.1-x86_64.flatpak
 flatpak run io.github.hodgkinsstudios.CipherNES
 ```
 
@@ -48,14 +50,14 @@ Flatpak redirects XDG application data into the app sandbox. CipherNES keeps its
 writable data under:
 
 ```text
-~/.var/app/io.github.hodgkinsstudios.CipherNES/data/ciphernes/
+~/.var/app/io.github.hodgkinsstudios.CipherNES/data/HodgkinsStudios/CipherNES/
 ```
 
 That directory contains saves, save states, screenshots, recordings, cheats,
 TAS data, and the optional FDS BIOS:
 
 ```text
-~/.var/app/io.github.hodgkinsstudios.CipherNES/data/ciphernes/bios/disksys.rom
+~/.var/app/io.github.hodgkinsstudios.CipherNES/data/HodgkinsStudios/CipherNES/bios/disksys.rom
 ```
 
 ## Sandbox permissions and native file dialogs

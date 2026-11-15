@@ -1,28 +1,30 @@
-# CipherNES 1.0.0 — initial public release
+# CipherNES 1.0.0 — release candidate notes
 
-**HodgkinsStudios** · NTSC NES/Famicom emulator · source prepared November 8, 2026.
+**HodgkinsStudios** · NES/Famicom emulation · Linux, Windows and macOS source targets.
 
-This is the initial public CipherNES v1.0.0 release, built from a single shared hardware core for Ubuntu, Windows and macOS.
+This document is a **draft for final release review**, not a publication announcement. Review and validate all artifacts produced from the exact approved commit before tagging or publishing.
 
-## Features
+## Included functionality
 
-- Shared native emulation core, separate Ubuntu/Linux, Windows, and macOS frontends; keyboard/gamepad, native file loading, rewinding, save states, Game Genie, FDS with user-supplied BIOS, optional TAS and capture tools.
-- Recognizes 156 mapper IDs in the mapper regression registry. This is *not* 156 fully verified board implementations.
-- MMC5 ExRAM/banking/audio/split functions have focused coverage but some analog/scanline behavior remains unverified. ROM-specific hacks are not used as a substitute for hardware behavior.
+- Native C++ emulation core; separate platform frontends and a public C-compatible API.
+- Cartridge loading (iNES/NES 2.0, supported ZIP containers), user-supplied FDS BIOS support, battery-backed saves and save states.
+- Keyboard/gamepad mapping, multiple fullscreen modes, rewind, fast-forward, Game Genie, and optional TAS/video capture.
+- Headless verification utilities and maintainable build/packaging tools.
 
-## Recorded accuracy evidence
+## Known validation results
 
-- AccuracyCoin full run: **147/147 displayed PASS** after a fresh combined run on this clean v1.0.0 Ubuntu build. Completed at frame 4,159; save-state roundtrip PASS. Windows/macOS require independent validation.
-- Fresh synthetic mapper audit: **156/156 registered IDs; 7,156/7,156 assertions passed**.
-- External ZIP: 289/289 valid ROMs had previously executed 600 frames and restored state; these are *not* 289 internal accuracy verdicts.
-- 290-entry archival grading ledger at CP021: 175 documented internal passes, 0 confirmed fails, 1 visual-reference NMI sync mismatch (3 pixels), plus remaining non-graded/reference/PAL entries.
+- AccuracyCoin: **147 of 147 displayed PASS** on Ubuntu in the most recently confirmed full run.
+- External NTSC ROM ledger: **197 PASS / 7 FAIL / 70 UNVERIFIED**. Some passing entries are limited functional demonstrations; see `docs/TESTING.md` before interpreting these scores.
+- Synthetic mapper audit: **156 mapper IDs** recognized and **7,156 hardware-register assertions** passed; recognition is not complete accuracy certification.
+- Host audio, timeline and focused save-state/mapper tests have passed on Ubuntu.
+- Windows, macOS and release package builds require validation from the final release source commit.
 
-## Limitations
+## Disclosed limitations
 
-- NTSC is the supported timing target; PAL test results are not claimed.
-- `nmi_sync/demo_ntsc.nes` shows a three-pixel offset against the supplied source's reference tolerance, and is **not** certified as passing.
-- Game-specific and hardware-variant behavior may remain incomplete, including MMC5 analog audio and fine rendering timing.
-- The current core state format is **v11**, and the core C API is **v11**. Do not assume compatibility with older public `1.0.0` or `1.0.1` save-state files.
-- Windows/macOS builds pass their hosted compilation and headless smoke tests; physical-device graphical, audio and controller behavior still requires manual verification.
+- Edge-case PPU sprite/scanline/NMI synchronization tests remain unresolved.
+- Certain original mapper/homebrew ROMs have known fixture or compatibility concerns; raw RGB presentation does not simulate all composite NTSC effects.
+- PAL operation, rare mapper boards, analog audio fidelity, some fine MMC5 behavior and all platform frontends are not fully certified.
+- Save states are versioned; compatibility with files produced by older public binaries is not guaranteed.
+- No commercial ROMs, third-party test ROMs, FDS BIOS or user data are included.
 
-The standalone source ZIP excludes ROMs and FDS firmware. Prebuilt platform binaries are attached separately to the draft GitHub Release.
+See [testing](docs/TESTING.md), [build instructions](docs/BUILDING.md), [release checklist](docs/RELEASING.md), [license](LICENSE) and [notices](THIRD_PARTY_NOTICES.md).

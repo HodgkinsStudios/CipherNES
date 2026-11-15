@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify SHA-256 and inventory of intentionally tracked TEST_ROMS images."""
+"""Verify user-supplied external TEST_ROMS images against a pinned manifest."""
 import csv
 import hashlib
 from pathlib import Path

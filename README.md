@@ -1,64 +1,60 @@
 <p align="center">
-  <img src="assets/brand/ciphernes.svg" width="104" height="104" alt="CipherNES logo" />
+  <img src="assets/brand/ciphernes.svg" width="110" height="110" alt="CipherNES logo" />
 </p>
 
 <h1 align="center">CipherNES</h1>
 
 <p align="center">
-  <strong>A native NES / Famicom emulator built for accuracy.</strong><br />
-  A shared emulation core. Native desktop frontends. No game-specific compatibility hacks.
+  <strong>A native NES / Famicom emulator focused on hardware accuracy.</strong><br />
+  One emulation core. Desktop frontends for Linux, Windows and macOS. No game-specific workarounds.
 </p>
 
 <p align="center">
-  <img alt="Version 1.0.0" src="https://img.shields.io/badge/version-1.0.0-2563eb" />
-  <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-22c55e" />
-  <img alt="Timing target NTSC" src="https://img.shields.io/badge/timing-NTSC-64748b" />
-  <img alt="Platforms Linux, Windows, macOS" src="https://img.shields.io/badge/platforms-Linux%20%7C%20Windows%20%7C%20macOS-0f172a" />
+  <img alt="Version 1.0.1" src="https://img.shields.io/badge/version-1.0.1-2563eb" />
+  <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-22c55e" />
+  <img alt="Primary timing NTSC" src="https://img.shields.io/badge/timing-NTSC-64748b" />
+  <img alt="Platforms Linux Windows macOS" src="https://img.shields.io/badge/platforms-Linux%20%7C%20Windows%20%7C%20macOS-0f172a" />
 </p>
 
 <p align="center">
-  <a href="#getting-started">Get started</a> ·
   <a href="#features">Features</a> ·
-  <a href="#accuracy--validation">Accuracy</a> ·
-  <a href="#developer-test-roms">Testing</a> ·
-  <a href="#documentation">Documentation</a>
+  <a href="#getting-started">Getting started</a> ·
+  <a href="#accuracy-and-validation">Accuracy</a> ·
+  <a href="#documentation">Documentation</a> ·
+  <a href="#license">License</a>
 </p>
 
 ---
 
-## AccuracyCoin · 147 / 147 passed
+## AccuracyCoin — 147 / 147 passed
 
 <p align="center">
-  <img src="assets/screenshots/accuracycoin-147-of-147.png" width="576" alt="Actual CipherNES AccuracyCoin final screen displaying TESTS PASSED: 147 / 147" />
+  <img src="assets/screenshots/accuracycoin-147-of-147.png" width="512" alt="CipherNES rendering AccuracyCoin final screen: TESTS PASSED: 147 / 147" />
 </p>
 
-<p align="center"><sub>Captured directly from CipherNES 1.0.0, running AccuracyCoin's complete combined test sequence. Original 256 × 240 framebuffer, enlarged 3× using nearest-neighbor scaling; no results were edited.</sub></p>
+<p align="center"><sub>Actual CipherNES Ubuntu capture, 147 / 147 displayed PASS. Original NES framebuffer enlarged with nearest-neighbor scaling; test output was not altered.</sub></p>
 
-**147 of 147 AccuracyCoin tests passed** on the Ubuntu build. The run processed all tests at frame **4,172** and passed a save-state roundtrip. AccuracyCoin is a stringent hardware test for a specific NTSC NES hardware revision; this result does **not** imply perfect compatibility with every cartridge or console revision.
+CipherNES passed **147 out of 147 AccuracyCoin tests** in the most recently verified full Ubuntu run. The broader NES test-ROM corpus has **197 PASS, 7 FAIL and 70 UNVERIFIED** NTSC entries out of 274; passing entries include explicitly scoped functional demonstrations, and unverified entries are not treated as passes. These measurements are **not** claims of perfect NES compatibility or independently verified performance on every platform.
 
-## About CipherNES
+**[Read the complete accuracy methodology, test results and limitations](docs/TESTING.md).**
 
-CipherNES emulates the Nintendo Entertainment System and Famicom using a native emulation core shared across its Linux, Windows, and macOS frontends. Its approach is hardware-focused: CPU execution, PPU rendering, APU audio, DMA, interrupts, cartridge boards, and their interactions are modeled without title-specific fixes.
+## Features
 
-### Features
-
-| Category | Capabilities |
+| Area | Included functionality |
 | --- | --- |
-| **Emulation** | NTSC-targeted 2A03 CPU, 2C02 PPU, APU and cartridge/mapper support |
-| **Cartridges** | NES/iNES and NES 2.0 ROM loading, ZIP cartridge loading, battery saves |
-| **Disk games** | Famicom Disk System support with a **user-supplied** BIOS |
-| **Controls** | Keyboard and gamepad, hot-plug detection, configurable mappings |
-| **Display** | Windowed, aspect-correct fullscreen, and stretched fullscreen |
-| **Convenience** | Save/load states, frame rewind, fast-forward, Game Genie cheats |
-| **Advanced** | Input recording (TAS), image/video capture and a reusable native core interface |
+| **Emulation** | NTSC-targeted CPU, PPU, APU, DMA, interrupts and cartridge-board behavior |
+| **Games** | iNES / NES 2.0 images, supported ZIP containers and battery-backed saves |
+| **Disk support** | Famicom Disk System with a separately supplied BIOS (firmware not included) |
+| **Controls** | Keyboard and gamepad, hot-plugging and remappable inputs |
+| **Video** | Windowed, aspect-correct fullscreen and stretched fullscreen |
+| **Convenience** | Save/load states, rewind, fast-forward and Game Genie |
+| **Advanced** | Input recording (TAS), screenshots, capture utilities and reusable native core API |
 
-Mapper registration is broader than fully verified board accuracy. Some specialized hardware configurations and raster/audio timing behaviors still need validation; see [Mapper coverage](docs/NTSC_MAPPERS.md).
+Mapper registration is not equivalent to verified compatibility with every board variation. See the [architecture](docs/ARCHITECTURE.md) and [testing guide](docs/TESTING.md) for coverage details.
 
 ## Getting started
 
 ### Ubuntu / Linux
-
-From the repository root:
 
 ```bash
 sudo apt update
@@ -67,86 +63,56 @@ sudo apt install -y build-essential libsdl2-2.0-0 zlib1g zenity
 ./build/ubuntu/bin/CipherNES
 ```
 
-Use **File → Open** to load a legally obtained NES ROM. You can also use the provided `run_ciphernes.sh` launcher. The regular Linux executable links the emulator core into the binary and uses system runtime libraries.
+Load a legally obtained `.nes` file or supported `.zip` archive through **File → Open**. The `run_ciphernes.sh` launcher is also available after building. `kdialog` can be used instead of `zenity` on appropriate desktops.
 
 ### Windows and macOS
 
-| Platform | Build entry point | Notes |
+| Platform | Build entry point | Additional information |
 | --- | --- | --- |
-| Windows | `build_windows.bat` or `build_windows.ps1` | MinGW-w64/SDL2/zlib build tooling; [Windows guide](docs/WINDOWS.md) |
-| macOS | `./build_macos.sh` | Apple command-line tools and SDL2; [macOS guide](docs/MACOS.md) |
-| Linux packages | `./package_release.sh` | Native release ZIP; other packaging scripts in `packaging/` |
+| **Windows** | `build_windows.bat` or `build_windows.ps1` | Requires compatible MinGW-w64 / SDL2 build tools |
+| **macOS** | `./build_macos.sh` | Requires Apple command-line tools and SDL2 |
+| **Ubuntu/Linux** | `./build_ubuntu.sh` | Build verified on Ubuntu |
 
-Build scripts and GitHub Actions workflows are included for these platforms. **This AccuracyCoin result was measured on Ubuntu; it is not a claim that every platform package has been independently tested.**
+See [building and packaging](docs/BUILDING.md). The current validation evidence was collected on **Ubuntu**; Windows/macOS source targets and workflows exist, but native GUI/device testing is still required before publishing platform releases.
 
-### Common controls
+### Default controls
 
 | Action | Default |
 | --- | --- |
-| Switch display mode | `Esc` — windowed → fullscreen → stretched → windowed |
-| Rewind | Hold `R` |
-| Fast-forward | Hold `T` |
-| Open a game | **File → Open** |
-| Configure controller | **Configure → Controller Input** |
-| Save and load state | Application's state-slot controls |
+| Cycle windowed / fullscreen / stretched fullscreen | `Esc` |
+| Rewind (hold) | `R` |
+| Fast-forward (hold) | `T` |
+| Configure controllers | **Configure → Controller Input** |
 
-Keyboard and gamepad mappings are configurable. See [Features and controls](docs/FEATURES.md) for constraints involving TAS recording and capture.
+Input mapping, save data and other features are described in the [user guide](docs/USER_GUIDE.md).
 
-## Accuracy & validation
+## Accuracy and validation
 
-CipherNES reports **measured results**, rather than treating mapper registration or a ROM boot as proof of accuracy.
-
-| Validation | Result | Scope |
+| Recorded validation | Result | What it establishes |
 | --- | --- | --- |
-| **AccuracyCoin combined tests** | **147 / 147 PASS** | Complete suite, final result screen captured on this 1.0.0 Ubuntu build |
-| **NTSC test-ROM execution & save-state baseline** | **274 / 274** | 600 frames each; 15 PAL and one invalid image excluded; not internal PASS grading |
-| **Mapper smoke registry** | **156 / 156** | Registered mapper-ID initialization and execution coverage |
-| **Mapper regression assertions** | **7,156 / 7,156** | Synthetic mapper behavior checks |
-| **Host audio / rewind** | Pass | Release regression checks |
+| **AccuracyCoin** | **147 / 147 PASS** | Graded result confirmed from the final on-screen score |
+| **NTSC test-ROM verdicts** | **197 PASS / 7 FAIL / 70 UNVERIFIED** | 274 independently tracked entries; mixed test types, including functional demonstrations |
+| **NTSC 600-frame smoke baseline** | **274 / 274** | Execution and state restoration only, **not 274 hardware-test passes** |
+| **Mapper synthetic audit** | **156 mapper IDs / 7,156 assertions** | Registration and focused synthetic checks, not exhaustive board validation |
 
-The NTSC corpus totals above are from a fresh run on the 1.0.0 Ubuntu build. Mapper, audio and rewind figures are documented release-validation results, not claims of a new rerun in the NTSC pass.
+The result counts are **recorded development/validation baselines**, not a claim that the entire external corpus was rerun when this README was prepared. PAL timing, specialist controllers, analog composite video and some PPU/mapper cases remain incompletely verified.
 
-**NTSC test-ROM execution baseline:** **274/274** NTSC `.nes` ROMs successfully executed 600 frames and restored state on the 1.0.0 Ubuntu build; **0** execution/state failures. This is a **smoke/regression baseline, not an internal accuracy score**. Previously source-graded internal results include **175 PASS**, **one visual mismatch**, and **98 not fully adjudicated**; those internal grades were not freshly rerun in this batch. See the [full 274-ROM baseline and per-ROM CRCs](docs/NTSC_TEST_ROM_BASELINE.md).
-
-**Known boundaries:** NTSC is the primary timing target; PAL accuracy is not claimed. A documented `nmi_sync/demo_ntsc.nes` visual alignment discrepancy of three pixels remains unresolved. MMC5's fine-grained raster and analog audio behavior has not been fully verified. External ROM smoke tests and visual demos must not be counted as internal pass/fail scores.
-
-Reproduce the displayed AccuracyCoin screen with the bundled owner-supplied test ROM:
-
-```bash
-./tests/run_accuracycoin.sh TEST_ROMS/AccuracyCoin.nes /tmp/accuracycoin-final.ppm
-```
-
-The runner saves the framebuffer as a PPM file. Inspect its final screen to confirm the tally; **147 test entries processed** alone is not evidence that all 147 passed.
-
-## Developer test ROMs
-
-`TEST_ROMS/` stores developer-supplied test material and source/reference data. GitHub Actions includes a manually triggered **Test ROM corpus** workflow under **Actions → Test ROM corpus (manual) → Run workflow**. That workflow supports execution/save-state smoke testing and an optional full AccuracyCoin capture; ROM execution does not automatically establish an internal PASS verdict.
-
-> [!IMPORTANT]
-> Test ROMs, reference data, and FDS firmware may have licenses or redistribution restrictions separate from CipherNES. **Check permissions before publishing `TEST_ROMS/` in a public GitHub repository.** The recommended default for a checkout containing these files is a private repository. Firmware is not supplied by CipherNES.
-
-See the [NTSC 274-ROM baseline](docs/NTSC_TEST_ROM_BASELINE.md), [test ROM documentation](TEST_ROMS/README.md) and [third-party notices](THIRD_PARTY_NOTICES.md).
+Detailed descriptions of the seven failures, unverified tests, reproducibility procedures and third-party test credits are maintained in **[Accuracy and testing](docs/TESTING.md)**.
 
 ## Documentation
 
 | Guide | Contents |
 | --- | --- |
-| [Features](docs/FEATURES.md) | Controls, save states, rewind, fast-forward and recording |
-| [Architecture](docs/SYSTEM_ARCHITECTURE.md) | Shared core and platform frontends |
-| [Core API](docs/CORE_LIBRARY.md) | Reusable native emulation interface |
-| [Builds & runtime storage](docs/PORTABLE_RUNTIME.md) | Per-platform application directories and dependencies |
-| [Validation](docs/VALIDATION.md) | Test procedures and accuracy limitations |
-| [NTSC test-ROM baseline](docs/NTSC_TEST_ROM_BASELINE.md) | 274-ROM execution results, limitations, reproducibility and per-ROM evidence |
-| [Mapper coverage](docs/NTSC_MAPPERS.md) | Registry, tested features and known limitations |
-| [Release notes](RELEASE_NOTES_1.0.0.md) | Version 1.0.0 release overview |
+| [User guide](docs/USER_GUIDE.md) | Controls, file loading, saves and runtime behavior |
+| [Building](docs/BUILDING.md) | Supported toolchains, platform builds and packaging |
+| [Architecture](docs/ARCHITECTURE.md) | Shared core, hardware modules and mapper scope |
+| [Accuracy and testing](docs/TESTING.md) | Test suites, measured results, limitations and credits |
+| [Release preparation](docs/RELEASING.md) | QA checklist and release packaging |
+| [Development](docs/DEVELOPMENT.md) | Regression tools and source-checkpoint workflow |
+| [Release notes](RELEASE_NOTES_1.0.1.md) | What's included in v1.0.1 |
 
 ## License
 
-CipherNES source code is released under the [MIT License](LICENSE). Copyright © 2026 HodgkinsStudios. Third-party test ROMs, firmware, and other external materials are **not** covered by that grant unless their own licenses say so.
+CipherNES source code is distributed under the [MIT License](LICENSE). Copyright © 2026 HodgkinsStudios. See [third-party notices](THIRD_PARTY_NOTICES.md). No commercial game ROMs, third-party test-ROM binaries, FDS firmware, save files or compiled releases are included in the source repository.
 
-*Nintendo, Famicom, and NES are trademarks of their respective owners. CipherNES is an independent emulator project and is not affiliated with or endorsed by Nintendo.*
-
-
-## Release downloads
-
-Prebuilt Ubuntu, Windows, macOS Intel and Apple Silicon, AppImage, Debian and Flatpak files are assembled by GitHub Actions into a **draft v1.0.0 release**, separate from the repository's test ROMs. Build CI publishes draft assets directly to GitHub Releases rather than GitHub Actions artifact storage. Review the native-build smoke test results and perform manual GUI/controller validation before publishing. See [release asset guide](docs/RELEASE_ASSETS.md).
+*Nintendo, NES and Famicom are trademarks of their respective owners. CipherNES is an independent project and is not affiliated with or endorsed by Nintendo.*

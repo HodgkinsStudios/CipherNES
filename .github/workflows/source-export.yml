@@ -4,7 +4,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
   source:
     name: Exact committed source ZIP
@@ -20,12 +20,15 @@ jobs:
           # The TEST_ROMS tree is an optional private development fixture set.
           # Never bundle those third-party images into standard release source.
           git ls-files -z -- . ':(exclude)TEST_ROMS/**' | tar --null -T - -cf - | tar -xf - -C "dist/CipherNES-${VERSION}-Source"
+          # Include only ROM fixture documentation; the actual images stay excluded.
+          mkdir -p "dist/CipherNES-${VERSION}-Source/TEST_ROMS"
+          cp TEST_ROMS/README.md TEST_ROMS/ROM_MANIFEST.csv TEST_ROMS/.gitignore "dist/CipherNES-${VERSION}-Source/TEST_ROMS/"
           cd dist
           zip -qr "CipherNES-${VERSION}-GitHub-Source.zip" "CipherNES-${VERSION}-Source"
-      - name: Upload tested files to draft GitHub Release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          bash .github/ci/upload_release_assets.sh "dist/CipherNES-1.0.0-GitHub-Source.zip"
+      - name: Upload exact source
+        uses: actions/upload-artifact@v4
+        with:
+          name: CipherNES-Exact-Source
+          path: dist/CipherNES-*-GitHub-Source.zip
+          if-no-files-found: error
+          retention-days: 30

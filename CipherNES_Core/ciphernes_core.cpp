@@ -71,11 +71,11 @@ CIPHERNES_API int ciphernes_get_api_version() {
 CIPHERNES_API const char* ciphernes_get_core_version_string() {
     // Keep stable for UI display and debugging.
     #if defined(_WIN32)
-    return "CipherNES Core 1.0.0 (Windows, NTSC)";
+    return "CipherNES Core 1.0.1 (Windows, NTSC)";
 #elif defined(__APPLE__)
-    return "CipherNES Core 1.0.0 (macOS, NTSC)";
+    return "CipherNES Core 1.0.1 (macOS, NTSC)";
 #else
-    return "CipherNES Core 1.0.0 (Ubuntu, NTSC)";
+    return "CipherNES Core 1.0.1 (Ubuntu, NTSC)";
 #endif
 }
 
@@ -345,7 +345,8 @@ CIPHERNES_API int ciphernes_load_state(CIPHERNES_Handle* h, const uint8_t* state
     if (!ciphernes_state::read_u32(p,end,magic)) return 0;
     if (!ciphernes_state::read_u32(p,end,ver)) return 0;
     if (magic != 0x53545047u) return 0;
-    if (ver != CIPHERNES_STATE_VERSION) return 0;
+    // Backward compatible with v11 states (which omitted two timing latches).
+    if (ver != 11u && ver != CIPHERNES_STATE_VERSION) return 0;
 
     bool turbo=false;
     uint64_t toastUntil=0;
@@ -354,7 +355,8 @@ CIPHERNES_API int ciphernes_load_state(CIPHERNES_Handle* h, const uint8_t* state
     if (!ciphernes_state::read_u64(p,end,toastUntil)) return 0;
     if (!ciphernes_state::read_string(p,end,toast)) return 0;
 
-    if (!h->bus.loadState(p,end)) return 0;
+    if (!h->bus.loadState(p,end,ver)) return 0;
+    if (p != end) return 0;
 
     (void)turbo; // reserved legacy host-control bit
     h->toastUntilUtcMs = toastUntil;

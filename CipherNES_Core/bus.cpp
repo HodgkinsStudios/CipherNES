@@ -649,9 +649,13 @@ void Bus::saveState(std::vector<uint8_t>& out) const {
 
     // State v6 compatibility: obsolete RAM-lock count (always zero).
     write_u32(out, 0u);
+
+    // State v12 appends two frame-boundary timing latches after v11 payload.
+    write_bool(out, cpuBusGetCycle);
+    write_bool(out, ppu.pendingOddFrameSkip());
 }
 
-bool Bus::loadState(const uint8_t*& p, const uint8_t* end) {
+bool Bus::loadState(const uint8_t*& p, const uint8_t* end, uint32_t stateVersion) {
     using namespace ciphernes_state;
     if (!read_bytes(p,end,ram.data(),ram.size())) return false;
 
@@ -726,6 +730,17 @@ bool Bus::loadState(const uint8_t*& p, const uint8_t* end) {
     for (uint32_t i=0;i<lockCount;i++) {
         uint16_t ignoredAddr=0; uint8_t ignoredValue=0;
         if(!read_u16(p,end,ignoredAddr) || !read_u8(p,end,ignoredValue)) return false;
+    }
+
+    if (stateVersion >= 12u) {
+        bool oddSkip = false;
+        if (!read_bool(p,end,cpuBusGetCycle)) return false;
+        if (!read_bool(p,end,oddSkip)) return false;
+        ppu.restorePendingOddFrameSkip(oddSkip);
+    } else {
+        // Legacy format omitted both timing latches.
+        cpuBusGetCycle = true;
+        ppu.restorePendingOddFrameSkip(false);
     }
 
     return true;

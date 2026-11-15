@@ -41,6 +41,9 @@ public:
     // Save-state support
     void saveState(std::vector<uint8_t>& out) const;
     bool loadState(const uint8_t*& p, const uint8_t* end);
+    // Captures the pre-render odd-frame dot-skip decision at frame boundaries.
+    bool pendingOddFrameSkip() const { return odd_frame_skip_pending; }
+    void restorePendingOddFrameSkip(bool pending) { odd_frame_skip_pending = pending; }
 
 private:
     std::shared_ptr<Cartridge> cartridge;

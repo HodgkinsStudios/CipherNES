@@ -23,6 +23,7 @@
   <url type="homepage">https://github.com/HodgkinsStudios/CipherNES</url>
   <url type="bugtracker">https://github.com/HodgkinsStudios/CipherNES/issues</url>
   <releases>
+    <release version="1.0.1" date="2026-11-15"/>
     <release version="1.0.0" date="2026-11-08"/>
   </releases>
   <content_rating type="oars-1.1"/>

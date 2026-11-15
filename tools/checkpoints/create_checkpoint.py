@@ -2,7 +2,7 @@
 """ROM-free CipherNES full-source ZIP + reproducible SHA256/chunk manifest.
 
 Usage:
-  python3 tools/checkpoints/create_checkpoint.py --checkpoint CP006 --out /tmp/ciphernes-cp006
+  python3 tools/checkpoints/create_checkpoint.py --checkpoint CP039 --out /tmp/ciphernes-cp039
 Only the archive and metadata will be written in --out, never uploaded automatically.
 """
 import argparse
@@ -12,8 +12,8 @@ from pathlib import Path
 import zipfile
 
 MAX_BYTES = 50_000_000  # user-defined 50 MB (decimal), not 50 MiB
-SKIP_DIRS = {'.git', '.svn', '__pycache__', 'build', 'Saves', 'saves', 'ROMs', 'roms', 'TestRoms', '.venv'}
-SKIP_SUFFIXES = {'.nes', '.fds', '.qd', '.sav', '.7z', '.zip', '.obj', '.o', '.a', '.so', '.dll', '.exe', '.png', '.jpg', '.jpeg', '.iso', '.bin', '.part001'}
+SKIP_DIRS = {'.git', '.svn', '__pycache__', 'build', 'dist', 'obj', 'bin', 'runtime', 'Saves', 'SaveState', 'Screenshots', 'Videos', 'TAS', 'Cheats', 'logs', 'config', 'saves', 'ROMs', 'roms', 'TestRoms', '.venv', '.cache'}
+SKIP_SUFFIXES = {'.nes', '.fds', '.nsf', '.unif', '.unf', '.qd', '.sav', '.state', '.7z', '.zip', '.obj', '.o', '.a', '.so', '.dylib', '.dll', '.exe', '.png', '.ppm', '.jpg', '.jpeg', '.wav', '.avi', '.iso', '.bin', '.deb', '.flatpak', '.appimage', '.part001'}
 
 def sha256(path):
     h = hashlib.sha256()
@@ -38,10 +38,10 @@ def main():
     target = out / basename
     paths = [p for p in root.rglob('*') if p.is_file() and not any(d in SKIP_DIRS for d in p.relative_to(root).parts[:-1])
              and p.suffix.lower() not in SKIP_SUFFIXES
-             and '.part' not in p.name and not p.name.startswith('.DS_Store')]
+             and '.part' not in p.name and not p.name.startswith('.DS_Store') and p.relative_to(root).parts[0] != 'checkpoints' and not any(part.startswith('CP0') for part in p.relative_to(root).parts[:-1])]
     with zipfile.ZipFile(target, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for path in sorted(paths):
-            z.write(path, arcname='CipherNES-main/' + path.relative_to(root).as_posix())
+            z.write(path, arcname='CipherNES/' + path.relative_to(root).as_posix())
     chunks = []
     if target.stat().st_size > MAX_BYTES:
         with target.open('rb') as source:

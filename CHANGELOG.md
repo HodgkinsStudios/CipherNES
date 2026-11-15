@@ -1,12 +1,18 @@
 # Changelog
 
-## 1.0.0 — November 8, 2026 (GitHub source preparation)
+This project uses semantic versions for the source and release artifacts. A GitHub commit does not imply that a corresponding release has been published.
 
-- Prepared the CP021 emulator implementation as the authoritative clean v1.0.0 source.
-- Removed historical checkpoint reports, duplicate documents, grading fixtures, and obsolete pass-specific test tools from public source.
-- Consolidated installation, feature, architecture, validation, and release documentation.
-- Synchronized version strings, GitHub Actions artifact names, package metadata, and the CI release-version check.
-- Preserved core emulation and frontends, mapper regression coverage, and release packaging scripts.
-- Remaining known NMI synchronization 3-pixel mismatch documented; no claim of perfect compatibility.
+## 1.0.1 — release-preparation candidate (2026-11-15)
 
-Historical release and development evidence, including previous public 1.0.0 and 1.0.1 releases, is retained in the separate original GitHub history and CipherNES Drive checkpoints; the current public source tree is not intended to archive each intermediate CP pass.
+- Professional GitHub README with the measured AccuracyCoin 147/147 final-screen capture.
+- Consolidated accuracy report including 197 PASS / 7 FAIL / 70 UNVERIFIED NTSC corpus verdicts, scope restrictions and upstream test-suite acknowledgements.
+- Applied consistent v1.0.1 version metadata to package naming, CI candidate workflow and native core version strings.
+- Retained prior PPU forced-blanking palette and APU triangle-phase hardware corrections from the authoritative development source.
+- Kept the ROM-free, buildable source layout and usable regression tools while excluding obsolete checkpoints and compiled/test binaries.
+- No new game-specific hacks or new accuracy verdicts claimed in this documentation/version pass.
+
+## 1.0.0 — initial source release
+
+- NES/Famicom shared emulation core and desktop frontends for Linux, Windows and macOS.
+- CPU, PPU, APU, FDS and cartridge mapper emulation, save states, rewind, configurable controls and optional TAS/capture support.
+- Headless regression checks and cross-platform packaging workflows.

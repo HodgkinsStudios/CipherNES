@@ -101,7 +101,7 @@ struct Bus {
 
     // Save-state support
     void saveState(std::vector<uint8_t>& out) const;
-    bool loadState(const uint8_t*& p, const uint8_t* end);
+    bool loadState(const uint8_t*& p, const uint8_t* end, uint32_t stateVersion = 11);
 
     // Run one master clock tick (PPU ticks every call; CPU ticks every 3 calls)
     void clock();

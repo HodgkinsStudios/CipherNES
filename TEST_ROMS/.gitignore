@@ -1,8 +1,14 @@
-# Test fixtures are intentionally tracked here, even though .nes and .log
-# files are ignored elsewhere in the project.
-!*.nes
-!*.NES
-!*.fds
-!*.nsf
-!*.unif
-!nestest.log
+# External test images and generated payloads are not release-source materials.
+*.nes
+*.NES
+*.fds
+*.FDS
+*.nsf
+*.NSF
+*.unif
+*.UNIF
+*.wav
+*.png
+*.ppm
+*.zip
+*.7z

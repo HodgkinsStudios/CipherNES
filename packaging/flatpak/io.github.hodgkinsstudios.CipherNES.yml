@@ -30,9 +30,11 @@ modules:
       - install -Dm644 README.md /app/share/doc/ciphernes/README.md
       - install -Dm644 bios/README.md /app/share/doc/ciphernes/bios/README.md
     sources:
-      - type: git
-        url: https://github.com/HodgkinsStudios/CipherNES.git
-        branch: main
+      # The release source is staged from the checked-out working tree.
+      # This works for private repositories and avoids downloading a moving branch.
+      - type: archive
+        path: .ciphernes-local-source.tar.gz
+        strip-components: 0
       - type: file
         path: ciphernes-flatpak-launcher.sh
       - type: file

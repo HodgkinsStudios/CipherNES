@@ -23,6 +23,14 @@ command -v flatpak-builder >/dev/null 2>&1 || {
     exit 1
 }
 
+# Build strictly from checked-out, ROM-free application source. The archive is
+# temporary and is removed even if flatpak-builder exits unsuccessfully.
+LOCAL_SOURCE_ARCHIVE="$ROOT/packaging/flatpak/.ciphernes-local-source.tar.gz"
+trap 'rm -f "$LOCAL_SOURCE_ARCHIVE"' EXIT
+tar -czf "$LOCAL_SOURCE_ARCHIVE" -C "$ROOT" \
+    CipherNES_Core CipherNES_Ubuntu build_ubuntu.sh \
+    README.md LICENSE THIRD_PARTY_NOTICES.md VERSION bios/README.md
+
 rm -rf "$BUILD_ROOT"
 mkdir -p "$BUILD_ROOT" "$OUT_DIR"
 

@@ -1128,7 +1128,25 @@ void PPU2C02::updatePaletteColorCacheEntry(uint8_t addr) {
     addr &= 0x1F;
     uint8_t index = uint8_t(tbl_palette[addr] & 0x3F);
     if (mask.grayscale) index = uint8_t(index & 0x30);
-    palette_color_cache[addr] = 0xFF000000u | kNesPalette[index];
+    // The 2C02 color-emphasis pins attenuate the non-emphasized phases of
+    // the composite signal. Decode the output color when PPUMASK or a
+    // palette byte changes, not in the per-pixel rendering hot path.
+    // This RGB approximation preserves the base palette when no emphasis is
+    // selected and gives the host a distinct output for emphasis states.
+    uint32_t rgb = kNesPalette[index];
+    const uint8_t emphasis = uint8_t(mask.reg >> 5);
+    if (emphasis) {
+        uint32_t r = (rgb >> 16) & 0xFFu;
+        uint32_t g = (rgb >> 8) & 0xFFu;
+        uint32_t b = rgb & 0xFFu;
+        // Emphasizing R reduces G/B; emphasizing G reduces R/B;
+        // emphasizing B reduces R/G. Multiple emphasis bits combine.
+        if (emphasis & 1u) { g = (g * 3u + 2u) / 4u; b = (b * 3u + 2u) / 4u; }
+        if (emphasis & 2u) { r = (r * 3u + 2u) / 4u; b = (b * 3u + 2u) / 4u; }
+        if (emphasis & 4u) { r = (r * 3u + 2u) / 4u; g = (g * 3u + 2u) / 4u; }
+        rgb = (r << 16) | (g << 8) | b;
+    }
+    palette_color_cache[addr] = 0xFF000000u | rgb;
 }
 
 void PPU2C02::rebuildPaletteColorCache() {
@@ -1201,9 +1219,9 @@ void PPU2C02::clock() {
                         scanline0_sprite_eval_enable = true;
                     }
                 }
-                const bool grayscaleChanged = mask.grayscale != ((pending_mask_reg & 0x01) != 0);
+                const bool outputColorChanged = ((mask.reg ^ pending_mask_reg) & 0xE1u) != 0;
                 mask.reg = pending_mask_reg;
-                if (grayscaleChanged) rebuildPaletteColorCache();
+                if (outputColorChanged) rebuildPaletteColorCache();
 #ifdef CIPHERNES_DEBUG_PPU_BUS
                 if (scanline < 10) {
                     std::fprintf(stderr, "MASK sl=%d cy=%d old=%d new=%d x=%u count=%u lo=%02X hi=%02X spr0=%d\n",
@@ -1377,7 +1395,16 @@ void PPU2C02::clock() {
         }
 
         // All frames retain their pixels for smooth reversible playback.
-        frame[size_t(sl) * 256 + size_t(cycle - 1)] = getColorFromPaletteRam(final_palette, final_pixel);
+        // With both rendering enables clear, the PPU exposes the palette
+        // entry addressed by v directly on its video output whenever v
+        // points into $3F00-$3FFF. This is how color-bars and full-palette
+        // hardware test ROMs draw without the background/sprite pipeline.
+        // Otherwise the forced-blanking backdrop is universal background.
+        const bool forcedPalette = !renderingEnabled()
+            && (vram_addr.reg & 0x3F00u) == 0x3F00u;
+        frame[size_t(sl) * 256 + size_t(cycle - 1)] = forcedPalette
+            ? palette_color_cache[mirrorPaletteAddr(vram_addr.reg) & 0x1Fu]
+            : getColorFromPaletteRam(final_palette, final_pixel);
     }
     applyPendingMask();
 

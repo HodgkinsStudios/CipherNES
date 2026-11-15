@@ -20,7 +20,7 @@ void Mapper033::reset() {
 
 bool Mapper033::cpuMapRead(uint16_t addr, uint32_t& mappedAddr) {
     if (addr >= 0x8000) {
-        const uint32_t bank = (addr & 0xE000) >> 13; // 0..3 in 8 KiB steps
+        const uint32_t bank = (uint32_t(addr) - 0x8000u) >> 13; // 0..3 for $8000/$A000/$C000/$E000
         const uint32_t offset = addr & 0x1FFF;
         const uint32_t lastBank = (prgBanks8k == 0) ? 0 : (prgBanks8k - 1);
         const uint32_t secondLast = (prgBanks8k < 2) ? 0 : (prgBanks8k - 2);

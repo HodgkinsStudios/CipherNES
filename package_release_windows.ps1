@@ -25,8 +25,8 @@ foreach ($name in $Required) {
 foreach ($name in @("LICENSE", "THIRD_PARTY_NOTICES.md", "CHANGELOG.md", ("RELEASE_NOTES_" + $Version + ".md"), "VERSION")) {
     Copy-Item (Join-Path $Root $name) $Stage
 }
-Copy-Item (Join-Path $Root "docs\VALIDATION.md") (Join-Path $Stage "docs")
-Copy-Item (Join-Path $Root "docs\WINDOWS.md") (Join-Path $Stage "docs")
+Copy-Item (Join-Path $Root "docs\TESTING.md") (Join-Path $Stage "docs")
+Copy-Item (Join-Path $Root "docs\BUILDING.md") (Join-Path $Stage "docs")
 
 @"
 # CipherNES $Version — Windows x86_64
@@ -50,7 +50,7 @@ Supply your own BIOS in %APPDATA%\HodgkinsStudios\CipherNES\bios\disksys.rom.
 
 ## Accuracy
 
-See docs\VALIDATION.md for the release certification record.
+See docs\TESTING.md for the release certification record.
 
 ## License
 

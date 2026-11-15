@@ -20,7 +20,7 @@ typedef struct CIPHERNES_Handle CIPHERNES_Handle;
 // Increment CIPHERNES_API_VERSION whenever you change any exported function signature
 // or exported struct layout.
 #define CIPHERNES_API_VERSION 11
-#define CIPHERNES_STATE_VERSION 11
+#define CIPHERNES_STATE_VERSION 12
 
 // Buttons bitmask (per controller port)
 enum CIPHERNES_Button : uint8_t {
