@@ -98,6 +98,10 @@ mkdir -p "$SRC_STAGE"
 # Keep it while continuing to exclude arbitrary PNG dumps from source exports.
 mkdir -p "$SRC_STAGE/assets/screenshots"
 cp "$ROOT/assets/screenshots/accuracycoin-147-of-147.png" "$SRC_STAGE/assets/screenshots/"
+mkdir -p "$SRC_STAGE/assets/brand" "$SRC_STAGE/packaging/appimage" "$SRC_STAGE/packaging/flatpak"
+cp "$ROOT/assets/brand/ciphernes.png" "$ROOT/assets/brand/ciphernes-icon.png" "$SRC_STAGE/assets/brand/"
+cp "$ROOT/packaging/appimage/ciphernes.png" "$SRC_STAGE/packaging/appimage/"
+cp "$ROOT/packaging/flatpak/io.github.hodgkinsstudios.CipherNES.png" "$SRC_STAGE/packaging/flatpak/"
 (
     cd "$DIST"
     zip -qr "CipherNES-$VERSION-Source.zip" "$(basename "$SRC_STAGE")"

@@ -32,12 +32,12 @@ fi
 [[ -x "$BIN_DIR/CipherNES" ]] || { echo "Missing $BIN_DIR/CipherNES" >&2; exit 1; }
 
 rm -rf "$BUILD_ROOT"
-mkdir -p     "$APPDIR/usr/bin"     "$APPDIR/usr/lib"     "$APPDIR/usr/share/applications"     "$APPDIR/usr/share/icons/hicolor/scalable/apps"     "$APPDIR/usr/share/metainfo"     "$APPDIR/usr/share/licenses/ciphernes"     "$APPDIR/usr/share/doc/ciphernes/bios"     "$OUT_DIR"
+mkdir -p     "$APPDIR/usr/bin"     "$APPDIR/usr/lib"     "$APPDIR/usr/share/applications"     "$APPDIR/usr/share/icons/hicolor/256x256/apps"     "$APPDIR/usr/share/metainfo"     "$APPDIR/usr/share/licenses/ciphernes"     "$APPDIR/usr/share/doc/ciphernes/bios"     "$OUT_DIR"
 
 install -m 0755 "$BIN_DIR/CipherNES" "$APPDIR/usr/bin/CipherNES"
 install -m 0755 "$ROOT/packaging/appimage/AppRun" "$APPDIR/AppRun"
 install -m 0644 "$ROOT/packaging/appimage/ciphernes.desktop" "$APPDIR/usr/share/applications/ciphernes.desktop"
-install -m 0644 "$ROOT/packaging/appimage/ciphernes.svg" "$APPDIR/usr/share/icons/hicolor/scalable/apps/ciphernes.svg"
+install -m 0644 "$ROOT/packaging/appimage/ciphernes.png" "$APPDIR/usr/share/icons/hicolor/256x256/apps/ciphernes.png"
 install -m 0644 "$ROOT/packaging/appimage/io.github.hodgkinsstudios.CipherNES.metainfo.xml" "$APPDIR/usr/share/metainfo/io.github.hodgkinsstudios.CipherNES.metainfo.xml"
 install -m 0644 "$ROOT/LICENSE" "$APPDIR/usr/share/licenses/ciphernes/LICENSE"
 install -m 0644 "$ROOT/THIRD_PARTY_NOTICES.md" "$APPDIR/usr/share/doc/ciphernes/THIRD_PARTY_NOTICES.md"
@@ -45,8 +45,8 @@ install -m 0644 "$ROOT/README.md" "$APPDIR/usr/share/doc/ciphernes/README.md"
 install -m 0644 "$ROOT/bios/README.md" "$APPDIR/usr/share/doc/ciphernes/bios/README.md"
 
 ln -s usr/share/applications/ciphernes.desktop "$APPDIR/ciphernes.desktop"
-ln -s usr/share/icons/hicolor/scalable/apps/ciphernes.svg "$APPDIR/ciphernes.svg"
-ln -s ciphernes.svg "$APPDIR/.DirIcon"
+ln -s usr/share/icons/hicolor/256x256/apps/ciphernes.png "$APPDIR/ciphernes.png"
+ln -s ciphernes.png "$APPDIR/.DirIcon"
 
 resolve_lib() {
     local name="$1"

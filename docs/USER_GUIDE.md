@@ -35,3 +35,7 @@ No commercial game ROMs, external test binaries or BIOS images are distributed w
 ## Saving and capturing
 
 All user-writable files are kept in the platform's per-user data root, not the executable directory. The application creates directories such as `Saves/`, `SaveState/`, `Screenshots/`, `Videos/`, `TAS/`, `Cheats/`, `bios/`, `config/` and `logs/` without erasing their contents. See [platform storage](BUILDING.md#per-user-data-paths).
+
+## About CipherNES
+
+Open **Help → About** to see the CipherNES logo, studio name, version and supported desktop platforms. The artwork is embedded in the native Linux, Windows and macOS frontends, so it also works when running without the source tree.

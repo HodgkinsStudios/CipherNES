@@ -24,7 +24,7 @@ modules:
       - install -Dm755 ciphernes-flatpak-launcher.sh /app/bin/ciphernes
       - install -Dm644 io.github.hodgkinsstudios.CipherNES.desktop /app/share/applications/io.github.hodgkinsstudios.CipherNES.desktop
       - install -Dm644 io.github.hodgkinsstudios.CipherNES.metainfo.xml /app/share/metainfo/io.github.hodgkinsstudios.CipherNES.metainfo.xml
-      - install -Dm644 io.github.hodgkinsstudios.CipherNES.svg /app/share/icons/hicolor/scalable/apps/io.github.hodgkinsstudios.CipherNES.svg
+      - install -Dm644 io.github.hodgkinsstudios.CipherNES.png /app/share/icons/hicolor/256x256/apps/io.github.hodgkinsstudios.CipherNES.png
       - install -Dm644 LICENSE /app/share/licenses/io.github.hodgkinsstudios.CipherNES/LICENSE
       - install -Dm644 THIRD_PARTY_NOTICES.md /app/share/doc/ciphernes/THIRD_PARTY_NOTICES.md
       - install -Dm644 README.md /app/share/doc/ciphernes/README.md
@@ -42,4 +42,4 @@ modules:
       - type: file
         path: io.github.hodgkinsstudios.CipherNES.metainfo.xml
       - type: file
-        path: io.github.hodgkinsstudios.CipherNES.svg
+        path: io.github.hodgkinsstudios.CipherNES.png

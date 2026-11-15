@@ -71,7 +71,7 @@ jobs:
           test -f squashfs-root/usr/lib/libstdc++.so.6
           test -f squashfs-root/usr/lib/libgcc_s.so.1
           test -f squashfs-root/ciphernes.desktop
-          test -f squashfs-root/ciphernes.svg
+          test -f squashfs-root/ciphernes.png
           test -L squashfs-root/.DirIcon
 
       - name: Upload AppImage

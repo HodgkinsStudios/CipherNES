@@ -28,7 +28,7 @@ command -v flatpak-builder >/dev/null 2>&1 || {
 LOCAL_SOURCE_ARCHIVE="$ROOT/packaging/flatpak/.ciphernes-local-source.tar.gz"
 trap 'rm -f "$LOCAL_SOURCE_ARCHIVE"' EXIT
 tar -czf "$LOCAL_SOURCE_ARCHIVE" -C "$ROOT" \
-    CipherNES_Core CipherNES_Ubuntu build_ubuntu.sh \
+    CipherNES_Core CipherNES_Ubuntu assets/brand/ciphernes_logo_pixels.h build_ubuntu.sh \
     README.md LICENSE THIRD_PARTY_NOTICES.md VERSION bios/README.md
 
 rm -rf "$BUILD_ROOT"

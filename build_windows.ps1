@@ -120,6 +120,9 @@ for ($i = 0; $i -lt $RuntimeNames.Length; $i++) {
         $ResourceLines += "$(101 + $i) RCDATA `"$posix`""
     }
 }
+$BrandIcon = (Join-Path $Root "assets/brand/ciphernes.ico").Replace('\', '/')
+if (-not (Test-Path $BrandIcon)) { throw "Missing CipherNES application icon: $BrandIcon" }
+$ResourceLines += "1 ICON `"$BrandIcon`""
 $ResourcesRc = Join-Path $ObjDir "ciphernes_runtime.rc"
 $ResourcesObj = Join-Path $ObjDir "ciphernes_runtime.o"
 $ResourceLines | Set-Content -Encoding ASCII $ResourcesRc

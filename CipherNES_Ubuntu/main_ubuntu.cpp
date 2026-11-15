@@ -1,4 +1,5 @@
 #include "sdl2_minimal.h"
+#include "../assets/brand/ciphernes_logo_pixels.h"
 #include "zip_rom_loader.h"
 #include "../CipherNES_Core/ciphernes_core.h"
 #include "../CipherNES_Core/rewind_history.h"
@@ -170,6 +171,9 @@ struct SDLApi {
     SDL_Window* (*CreateWindow)(const char*, int, int, int, int, Uint32);
     void (*DestroyWindow)(SDL_Window*);
     void (*SetWindowTitle)(SDL_Window*, const char*);
+    void (*SetWindowIcon)(SDL_Window*, void*);
+    void* (*CreateRGBSurfaceFrom)(void*, int, int, int, int, Uint32, Uint32, Uint32, Uint32);
+    void (*FreeSurface)(void*);
     void (*SetWindowMinimumSize)(SDL_Window*, int, int);
     int (*SetWindowFullscreen)(SDL_Window*, Uint32);
     Uint32 (*GetWindowID)(SDL_Window*);
@@ -231,6 +235,7 @@ struct SDLApi {
     void clearPointers() {
         Init = NULL; Quit = NULL; GetError = NULL; SetHint = NULL;
         CreateWindow = NULL; DestroyWindow = NULL; SetWindowTitle = NULL;
+        SetWindowIcon = NULL; CreateRGBSurfaceFrom = NULL; FreeSurface = NULL;
         SetWindowMinimumSize = NULL; SetWindowFullscreen = NULL;
         GetWindowID = NULL; GetWindowSize = NULL;
         CreateRenderer = NULL; DestroyRenderer = NULL; CreateTexture = NULL;
@@ -281,6 +286,9 @@ struct SDLApi {
 #define LOAD_SDL(name) if (!symbol(name, "SDL_" #name)) return false
         LOAD_SDL(Init); LOAD_SDL(Quit); LOAD_SDL(GetError); LOAD_SDL(SetHint);
         LOAD_SDL(CreateWindow); LOAD_SDL(DestroyWindow); LOAD_SDL(SetWindowTitle);
+        SetWindowIcon = reinterpret_cast<void (*)(SDL_Window*, void*)>(dlsym(library, "SDL_SetWindowIcon"));
+        CreateRGBSurfaceFrom = reinterpret_cast<void* (*)(void*, int, int, int, int, Uint32, Uint32, Uint32, Uint32)>(dlsym(library, "SDL_CreateRGBSurfaceFrom"));
+        FreeSurface = reinterpret_cast<void (*)(void*)>(dlsym(library, "SDL_FreeSurface"));
         LOAD_SDL(SetWindowMinimumSize); LOAD_SDL(SetWindowFullscreen);
         LOAD_SDL(GetWindowID); LOAD_SDL(GetWindowSize);
         LOAD_SDL(CreateRenderer); LOAD_SDL(DestroyRenderer); LOAD_SDL(CreateTexture);
@@ -886,6 +894,7 @@ private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* texture;
+    SDL_Texture* logoTexture; // Embedded branding, shared across all platform About screens
     SDL_AudioDeviceID audioDevice;
     Uint32 mainWindowId;
     std::vector<HostController> controllers;
@@ -1020,7 +1029,7 @@ private:
 };
 
 
-App::App() : window(NULL), renderer(NULL), texture(NULL), audioDevice(0), mainWindowId(0), core(NULL), running(false),
+App::App() : window(NULL), renderer(NULL), texture(NULL), logoTexture(NULL), audioDevice(0), mainWindowId(0), core(NULL), running(false),
     romLoaded(false), paused(false), muted(false), fullscreen(false), stretched(false),
     cheatsEnabled(false), unpacedRunWasActive(false),
     recordWithToast(false), recordWithTimer(false), customAviOutput(false), tasResetBeforeInputRecording(true),
@@ -1054,6 +1063,7 @@ App::~App() {
     closeControllers();
     if (audioDevice) sdl.CloseAudioDevice(audioDevice);
     if (texture) sdl.DestroyTexture(texture);
+    if (logoTexture) sdl.DestroyTexture(logoTexture);
     if (renderer) sdl.DestroyRenderer(renderer);
     if (window) sdl.DestroyWindow(window);
     if (sdl.Quit) sdl.Quit();
@@ -1133,6 +1143,17 @@ bool App::initialize() {
         1280, 820, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     if (!window) { std::cerr << "Window creation failed: " << sdl.GetError() << "\n"; return false; }
     mainWindowId = sdl.GetWindowID(window);
+    // Use the same project artwork as the About screen for the OS window icon.
+    std::vector<uint32_t> brandPixels(ciphernes_brand::kWidth * ciphernes_brand::kHeight);
+    for (size_t i = 0; i < brandPixels.size(); ++i)
+        brandPixels[i] = ciphernes_brand::kPalette[ciphernes_brand::kIndices[i]];
+    if (sdl.SetWindowIcon && sdl.CreateRGBSurfaceFrom && sdl.FreeSurface) {
+        void* icon = sdl.CreateRGBSurfaceFrom(&brandPixels[0],
+            ciphernes_brand::kWidth, ciphernes_brand::kHeight, 32,
+            ciphernes_brand::kWidth * 4, 0x00FF0000u, 0x0000FF00u, 0x000000FFu, 0xFF000000u);
+        if (icon) { sdl.SetWindowIcon(window, icon); sdl.FreeSurface(icon); }
+    }
+
     sdl.SetWindowMinimumSize(window, 800, 600);
     // The frontend has its own monotonic 60 Hz presentation clock. Blocking on
     // SDL's vsync in RenderPresent causes the emulation thread to miss its 3-4x
@@ -1150,6 +1171,13 @@ bool App::initialize() {
     if (sdl.SetThreadPriority) sdl.SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
     texture = sdl.CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, NES_W, NES_H);
     if (!texture) { std::cerr << "Texture creation failed: " << sdl.GetError() << "\n"; return false; }
+    // A separate static texture avoids decoding images during emulation frames.
+    logoTexture = sdl.CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
+        SDL_TEXTUREACCESS_STREAMING, ciphernes_brand::kWidth, ciphernes_brand::kHeight);
+    if (logoTexture && sdl.UpdateTexture(logoTexture, NULL, &brandPixels[0], ciphernes_brand::kWidth * 4) != 0) {
+        sdl.DestroyTexture(logoTexture); logoTexture = NULL;
+    }
+
 
     SDL_AudioSpec wanted; std::memset(&wanted, 0, sizeof(wanted));
     wanted.freq = 44100; wanted.format = SDL_AUDIO_S16SYS; wanted.channels = 1; wanted.samples = 1024;
@@ -1419,7 +1447,7 @@ void App::buildMenus() {
         MenuItemDef(CMD_TAS_RESET_BEFORE_INPUT_RECORDING, "Reset Before Input Recording") }; menus.push_back(root);
     root.text = "Cheats"; root.items = { MenuItemDef(CMD_CONFIG_CHEATS, "Configure Game Geine Codes"), MenuItemDef(CMD_GAME_GENIE, "Game Genie Encoder/Decoder"),
         MenuItemDef(0, "", 0, true), MenuItemDef(CMD_ENABLE_CHEATS, "Enable Cheats(Game Geine)") }; menus.push_back(root);
-    root.text = "Help"; root.items = { MenuItemDef(CMD_INFO, "Info") }; menus.push_back(root);
+    root.text = "Help"; root.items = { MenuItemDef(CMD_INFO, "About") }; menus.push_back(root);
     updateTasMenuState();
 }
 
@@ -2623,18 +2651,27 @@ void App::drawGameGenieScreen(int outW, int outH) {
 }
 
 void App::drawInfoScreen(int outW, int outH) {
-    const int pw = std::min(680, std::max(260, outW - 40));
-    const int ph = 270;
+    // The About panel is responsive, and uses the real logo on every platform.
+    const int pw = std::min(780, std::max(260, outW - 36));
+    const int ph = std::min(360, std::max(200, outH - MENU_BAR_H - STATUS_BAR_H - 30));
     SDL_Rect panel = {(outW - pw) / 2, (outH - ph) / 2, pw, ph};
     drawPanel(sdl, renderer, panel, 12, 22, 34);
-    const char* lines[] = {"CIPHERNES", "HODGKINSSTUDIOS", "CIPHERNES CORE 1.0"};
-    const int scales[] = {4, 3, 3};
-    for (int i = 0; i < 3; ++i) {
-        const int scale = scales[i];
-        const int x = panel.x + std::max(10, (panel.w - textWidth(lines[i], scale)) / 2);
-        drawText(sdl, renderer, x, panel.y + 34 + i * 80, lines[i], scale,
-                 i == 0 ? 110 : 235, i == 0 ? 205 : 221, i == 0 ? 255 : 234);
+    const int logoSize = std::min(ph - 28, std::min(300, pw / 2 - 18));
+    const int logoX = panel.x + 20;
+    const int logoY = panel.y + (panel.h - logoSize) / 2;
+    if (logoTexture) {
+        SDL_Rect image = { logoX, logoY, logoSize, logoSize };
+        sdl.RenderCopy(renderer, logoTexture, NULL, &image);
     }
+    const int textX = panel.x + logoSize + 48;
+    const int textW = std::max(0, panel.x + panel.w - textX - 12);
+    const int textScale = textW >= textWidth("CIPHERNES", 3) ? 3 : 2;
+    drawText(sdl, renderer, textX, panel.y + 66, "CIPHERNES", textScale, 220, 188, 255);
+    drawText(sdl, renderer, textX, panel.y + 128, "HODGKINSSTUDIOS", 2, 237, 240, 252);
+    drawText(sdl, renderer, textX, panel.y + 179, "NES / FAMICOM EMULATOR", 2, 190, 213, 229);
+    drawText(sdl, renderer, textX, panel.y + 220, "VERSION 1.0.1", 2, 255, 204, 120);
+    drawText(sdl, renderer, textX, panel.y + 259, "LINUX / WINDOWS / MACOS", 2, 174, 194, 214);
+    drawText(sdl, renderer, textX, panel.y + 295, "ESC OR CLICK TO RETURN", 2, 128, 159, 185);
 }
 
 void App::drawCurrentScreen(int outW, int outH) {

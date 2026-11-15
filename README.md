@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/brand/ciphernes.svg" width="110" height="110" alt="CipherNES logo" />
+  <img src="assets/brand/ciphernes.png" width="360" alt="CipherNES — HodgkinsStudios NES emulator logo" />
 </p>
 
 <h1 align="center">CipherNES</h1>

@@ -182,6 +182,8 @@ chmod 0755 "$OUT_DIR/CipherNES-macOS-$ARCH-single-file"
 VERSION_TEXT="$(tr -d '\r\n' < "$ROOT/VERSION" | sed -E 's/^[^0-9]*//; s/[^0-9.].*$//')"
 [[ -n "$VERSION_TEXT" ]] || VERSION_TEXT="1.0.1"
 
+mkdir -p "$CONTENTS/Resources"
+cp "$ROOT/assets/brand/ciphernes.icns" "$CONTENTS/Resources/ciphernes.icns"
 cat > "$CONTENTS/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -194,6 +196,7 @@ cat > "$CONTENTS/Info.plist" <<EOF
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>CipherNES</string>
     <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleIconFile</key><string>ciphernes.icns</string>
     <key>CFBundleShortVersionString</key><string>$VERSION_TEXT</string>
     <key>CFBundleVersion</key><string>$VERSION_TEXT</string>
     <key>LSApplicationCategoryType</key><string>public.app-category.games</string>
