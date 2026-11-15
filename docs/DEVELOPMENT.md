@@ -13,7 +13,7 @@
 
 1. Give every completed development pass its own `CP###_YYYY-MM-DD_HHMM_EST_OR_EDT_DESCRIPTION` folder. Use the real America/Toronto time and never overwrite earlier folders.
 2. Upload complete, ROM-free source; SHA-256 checksums; a separate changes/validation report; a handoff note; and an exact, copy-pasteable next-checkpoint continuation prompt.
-3. Split any individual artifact over **50,000,000 bytes (decimal)** into numbered parts ≤50,000,000 bytes, including per-part hashes and reassembly instructions. `tools/checkpoints/create_checkpoint.py` and `tools/checkpoints/reassemble_source.py` are retained for this workflow.
+3. Split any individual artifact over **50,000,000 bytes (decimal)** into numbered parts ≤50,000,000 bytes, including per-part hashes and reassembly instructions. Checkpoint/reassembly helpers are maintained outside the public release repository.
 4. Read back every folder listing. Re-download the source ZIP or numbered parts, reconstruct as needed and independently check the expected SHA-256.
 5. Never store commercial ROM dumps, private BIOS images, runtime saves, screenshot-corpus evidence, generated builds or credentials in a ROM-free source archive. External *testing evidence* may be stored separately in the private checkpoint folder where permitted.
 6. Record only tests actually run and mark all unavailable fixture/toolchain checks accurately. Avoid unsupported compatibility or accuracy claims.

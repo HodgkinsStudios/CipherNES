@@ -23,14 +23,7 @@ The screenshot is a captured CipherNES NES framebuffer with nearest-neighbor sca
 
 **Test origin and credit:** [100thCoin / AccuracyCoin](https://github.com/100thCoin/AccuracyCoin). The linked upstream repository is the source of the test program and its documentation. Credit and test-project licensing remain with the original project and contributors; AccuracyCoin is not part of the CipherNES code license.
 
-To reproduce with a lawfully acquired local test image:
-
-```bash
-CIPHERNES_LTO=0 CIPHERNES_JOBS=4 ./build_ubuntu.sh
-./tests/run_accuracycoin.sh TEST_ROMS/AccuracyCoin.nes /tmp/ciphernes-accuracycoin.ppm
-```
-
-Inspect the final screenshot to read the actual **TESTS PASSED** count. A test runner processing 147 entries or reaching a final frame does not, by itself, prove 147 passes.
+**Reproducibility:** The original test was run with a separately acquired, lawfully held AccuracyCoin ROM and a development-only framebuffer capture harness. Those ROM and testing tools are intentionally **not included in the public release repository**. The actual final-screen image above remains available for inspection, and the complete test evidence is archived in the development checkpoints. Simply processing 147 test entries does not establish that all 147 passed.
 
 ## NES test-ROM suite — 197 PASS, 7 FAIL, 70 UNVERIFIED
 
@@ -56,30 +49,24 @@ The two tests specific to the NEC MMC3A hardware-revision profile passed with th
 
 **70 NTSC test entries remain UNVERIFIED**, not PASS or FAIL. Their remaining requirements include manual audio comparison, physical peripheral emulation, interactive programs, graphics demonstrations and reference checks not conclusively established. Hardware-profile differences, test-asset defects, and output-only filters are documented rather than masked with game-specific hacks.
 
-## Reproduce ROM-free Linux regressions
+## Reproducing release smoke checks
 
-From the repository root:
-
-```bash
-CIPHERNES_LTO=0 CIPHERNES_JOBS=4 ./build_ubuntu.sh
-./tests/run_mapper_audit.sh
-./tests/run_mapper033_gate.sh
-./.github/ci/test_host_audio.sh
-python3 .github/ci/make_synthetic_rom.py /tmp/ciphernes-synthetic.nes
-./.github/ci/test_timeline.sh /tmp/ciphernes-synthetic.nes
-./tests/run_state_gate.sh /tmp/ciphernes-synthetic.nes
-./build/ubuntu/bin/CipherNES --validate /tmp/ciphernes-synthetic.nes 180
-python3 .github/ci/check_release_version.py
-```
-
-For the externally supplied corpus, restore only ROMs whose use is authorized under the paths in [`TEST_ROMS/ROM_MANIFEST.csv`](../TEST_ROMS/ROM_MANIFEST.csv), then run:
+The public repository contains a production application and its build/packaging workflows, not the development ROM corpus, test runners or diagnostic tools. On Ubuntu:
 
 ```bash
-python3 .github/ci/verify_test_roms.py
-python3 .github/ci/run_ntsc_baseline.py TEST_ROMS/nes-test-roms --frames 600 --jobs 4
+./build_ubuntu.sh
+./build/ubuntu/bin/CipherNES --help
 ```
 
-The runner measures execution and state restoration; separate guest-status or manually reviewed comparisons are necessary for internal accuracy verdicts. The project does not distribute third-party `.nes`, `.fds`, `.nsf` or `.unif` images, FDS BIOS dumps or copyrighted commercial ROMs.
+With a legally obtained NES test ROM supplied separately, you may exercise the public headless validator:
+
+```bash
+./build/ubuntu/bin/CipherNES --validate /path/to/your-test.nes 180
+```
+
+**Important:** The `--validate` command checks execution and state-roundtrip behavior; it cannot establish an internal hardware-test PASS. To reproduce the published 147/147 or per-ROM scores, independent test ROMs and separately maintained analysis tools are necessary. The full supporting evidence remains in private development checkpoints; deleting tools from the release source **does not change or erase the recorded test results**.
+
+The GitHub Actions build workflows run native startup and platform packaging checks. They do not rerun the full AccuracyCoin or 274-ROM suite. The source release distributes no third-party test programs, ROM images, firmware, or compiled testing utilities.
 
 ## Scope of validation
 

@@ -6,7 +6,7 @@ CipherNES source version is defined by `VERSION`. **Do not publish releases, for
 
 1. Review `VERSION`, [`README.md`](../README.md), [`RELEASE_NOTES_1.0.1.md`](../RELEASE_NOTES_1.0.1.md), [`CHANGELOG.md`](../CHANGELOG.md), [`LICENSE`](../LICENSE) and [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
 2. Verify ROM-free source inventory and confirm no private saves, BIOS, games, test-ROM binaries, screenshots or compiled/debug artifacts ship in the source export.
-3. Run all reproducible Ubuntu checks in [TESTING.md](TESTING.md), including source version checks and fresh AccuracyCoin grading with an authorized external ROM.
+3. Perform the native build and startup checks described in [TESTING.md](TESTING.md). Independently run AccuracyCoin and broader hardware tests using development-only tools and authorized ROMs before claiming new scores.
 4. Build/test Linux native, Windows x86_64, macOS Intel and Apple Silicon, then package AppImage, Debian and Flatpak where offered. Inspect the package metadata, architecture and dependencies.
 5. On each operating system manually validate file dialogs, inputs and gamepad switching, fullscreen, audio, save states, FDS paths and application quit/relaunch.
 6. Document known accuracy limits and keep the private full per-ROM evidence out of public distribution.
@@ -22,10 +22,9 @@ CipherNES source version is defined by `VERSION`. **Do not publish releases, for
 | AppImage | `./packaging/appimage/build_appimage.sh` |
 | Debian package | `./packaging/debian/build_deb.sh` |
 | Flatpak | `./packaging/flatpak/build_flatpak.sh` |
-| GitHub Actions candidate | `.github/workflows/release-candidate.yml` (draft, not a public release) |
 | ROM-free source export | `.github/workflows/source-export.yml` |
 
-Generated output lives under `build/` and `dist/` and must never be committed into the clean source tree. The draft-candidate workflow, if used, requires appropriate repository permissions and must not silently replace an existing tag. Some runner environments cannot upload normal Actions artifacts; a successful build is distinct from a successful artifact publication.
+Generated output lives under `build/` and `dist/` and must never be committed into the clean source tree. The GitHub Actions build workflows publish expiring build artifacts, not a public GitHub release. Verify release binaries and the final commit SHA before creating the release tag. A successful compile alone is not proof of manual GUI, audio, or controller functionality.
 
 ## Limitations to disclose
 

@@ -81,10 +81,6 @@ for source in "${CORE_SOURCES[@]}"; do
 done
 wait
 
-# An internal static archive is retained for the headless timeline regression
-# harness, not installed into any release output directory.
-ar rcs "$OUT_DIR/libCipherNES_CORE.a" "${CORE_OBJECTS[@]}"
-
 # Link the emulator core directly into the executable.  No separate core .so.
 "$CXX" -std=gnu++11 -O3 -DNDEBUG -fomit-frame-pointer -fno-semantic-interposition -fno-plt \
     -ffunction-sections -fdata-sections -Wall -Wextra -Wno-unused-parameter -Wno-unused-function \

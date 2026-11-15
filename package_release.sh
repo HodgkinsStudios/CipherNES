@@ -83,7 +83,7 @@ mkdir -p "$SRC_STAGE"
         --exclude='./SaveState' --exclude='./TAS' --exclude='./Saves' \
         --exclude='./Screenshots' --exclude='./Cheats' --exclude='./config' \
         --exclude='./logs' --exclude='./roms' --exclude='./saves' --exclude='./runtime' \
-        --exclude='./bios/disksys.rom' --exclude='./TEST_ROMS' \
+        --exclude='./bios/disksys.rom' \
         --exclude='*.nes' --exclude='*.NES' --exclude='*.fds' --exclude='*.FDS' \
         --exclude='*.nsf' --exclude='*.NSF' --exclude='*.unif' --exclude='*.UNIF' --exclude='*.qd' \
         --exclude='*.nss' --exclude='*.ci' --exclude='*.avi' --exclude='*.ppm' \
@@ -94,9 +94,6 @@ mkdir -p "$SRC_STAGE"
         --exclude='./*.user' --exclude='./*.layout' --exclude='./*.depend' \
         --exclude='__pycache__' --exclude='*.pyc' --exclude='.DS_Store' -cf - .
 ) | (cd "$SRC_STAGE" && tar -xf -)
-# Keep fixture metadata in source export without bundling any third-party ROMs.
-mkdir -p "$SRC_STAGE/TEST_ROMS"
-cp "$ROOT/TEST_ROMS/README.md" "$ROOT/TEST_ROMS/ROM_MANIFEST.csv" "$ROOT/TEST_ROMS/.gitignore" "$SRC_STAGE/TEST_ROMS/"
 # The README and testing guide embed this verified, owner-produced screenshot.
 # Keep it while continuing to exclude arbitrary PNG dumps from source exports.
 mkdir -p "$SRC_STAGE/assets/screenshots"

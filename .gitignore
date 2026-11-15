@@ -83,13 +83,12 @@ __pycache__/
 .vscode/
 .idea/
 
-# Keep authorized test ROM images outside source commits and checkpoints.
-# Keep only the fixture manifest and instructions; binaries remain external.
-/TEST_ROMS/**/*.nes
-/TEST_ROMS/**/*.NES
-/TEST_ROMS/**/*.fds
-/TEST_ROMS/**/*.nsf
-/TEST_ROMS/**/*.unif
 
 # Historical ROMDUMP screenshots and evidence remain intentionally absent.
 /game_menu_screenshots/
+
+# Private developer test source, tools and diagnostic fixtures
+/TEST_ROMS/
+/tests/
+/tools/
+/.github/ci/

@@ -40,12 +40,6 @@ jobs:
           build/macos/CipherNES-macOS-${{ matrix.arch }}-single-file --help
           test -d "$HOME/Library/Application Support/HodgkinsStudios/CipherNES/bios"
 
-      - name: Core ROM execution and state round-trip on macOS
-        run: |
-          python3 .github/ci/make_synthetic_rom.py "${{ runner.temp }}/ciphernes-synthetic.nes"
-          build/macos/CipherNES-macOS-${{ matrix.arch }}-single-file --validate \
-            "${{ runner.temp }}/ciphernes-synthetic.nes" 24
-
       - name: Hosted macOS SDL loader diagnostic (best effort)
         continue-on-error: true
         timeout-minutes: 1

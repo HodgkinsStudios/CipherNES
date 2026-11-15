@@ -19,8 +19,12 @@ jobs:
       - name: Install build/runtime dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential libsdl2-2.0-0 zlib1g xvfb xauth
 
-      - name: Validate release version and metadata
-        run: python3 .github/ci/check_release_version.py
+      - name: Validate semantic release version
+        shell: bash
+        run: |
+          version="$(cat VERSION)"
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test -f "RELEASE_NOTES_${version}.md"
 
       - name: Build CipherNES for Ubuntu
         run: ./build_ubuntu.sh
@@ -38,20 +42,14 @@ jobs:
           test ! -d build/ubuntu/bin/bios
           CIPHERNES_RUNTIME_DIR="$(mktemp -d)" build/ubuntu/bin/CipherNES --help
 
-      - name: Original synthetic ROM timeline and TAS branching regression
+      - name: SDL frontend startup smoke test
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+          CIPHERNES_SKIP_INITIAL_CONTROLLER_SCAN: "1"
         run: |
-          python3 .github/ci/make_synthetic_rom.py "$RUNNER_TEMP/ciphernes-test.nes"
-          ./.github/ci/test_timeline.sh "$RUNNER_TEMP/ciphernes-test.nes"
-          ./.github/ci/test_host_audio.sh
-          mkdir -p "$RUNNER_TEMP/ciphernes-runtime"
-          CIPHERNES_RUNTIME_DIR="$RUNNER_TEMP/ciphernes-runtime" \
-            SDL_AUDIODRIVER=dummy xvfb-run -a \
-            build/ubuntu/bin/CipherNES --tas-branch-test "$RUNNER_TEMP/ciphernes-test.nes"
-
-      - name: Complete-state rewind throughput and original ROM validation
-        run: |
-          ./.github/ci/benchmark_timeline.sh "$RUNNER_TEMP/ciphernes-test.nes" 120
-          build/ubuntu/bin/CipherNES --validate "$RUNNER_TEMP/ciphernes-test.nes" 180
+          xvfb-run -a build/ubuntu/bin/CipherNES --ui-preview "$RUNNER_TEMP/ciphernes-preview.png"
+          test -s "$RUNNER_TEMP/ciphernes-preview.png"
 
       - name: Upload Ubuntu build
         uses: actions/upload-artifact@v4

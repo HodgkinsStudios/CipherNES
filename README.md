@@ -73,7 +73,7 @@ Load a legally obtained `.nes` file or supported `.zip` archive through **File �
 | **macOS** | `./build_macos.sh` | Requires Apple command-line tools and SDL2 |
 | **Ubuntu/Linux** | `./build_ubuntu.sh` | Build verified on Ubuntu |
 
-See [building and packaging](docs/BUILDING.md). The current validation evidence was collected on **Ubuntu**; Windows/macOS source targets and workflows exist, but native GUI/device testing is still required before publishing platform releases.
+See [building and packaging](docs/BUILDING.md). Linux, Windows, macOS Intel and Apple Silicon builds have passed their corresponding hosted GitHub Actions jobs for v1.0.1. Real-device GUI, sound and controller checks remain recommended before publication.
 
 ### Default controls
 
@@ -113,6 +113,6 @@ Detailed descriptions of the seven failures, unverified tests, reproducibility p
 
 ## License
 
-CipherNES source code is distributed under the [MIT License](LICENSE). Copyright © 2026 HodgkinsStudios. See [third-party notices](THIRD_PARTY_NOTICES.md). No commercial game ROMs, third-party test-ROM binaries, FDS firmware, save files or compiled releases are included in the source repository.
+CipherNES source code is distributed under the [MIT License](LICENSE). Copyright © 2026 HodgkinsStudios. See [third-party notices](THIRD_PARTY_NOTICES.md). No commercial game ROMs, third-party test-ROM binaries, test tools, FDS firmware, save files or compiled releases are included in the source repository.
 
 *Nintendo, NES and Famicom are trademarks of their respective owners. CipherNES is an independent project and is not affiliated with or endorsed by Nintendo.*

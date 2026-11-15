@@ -2,7 +2,7 @@
 
 CipherNES is distributed under the MIT License in `LICENSE`.
 
-CipherNES was developed and validated using public NES hardware documentation plus independent test and reference projects. The `TEST_ROMS/` directory contains only a reference manifest and setup instructions in this source distribution; developers may restore independently obtained third-party test ROMs locally. Their individual licenses and redistribution rights have not been confirmed, and they are **not** covered by the CipherNES MIT license. Do not make the ROM-inclusive tree public until permissions have been reviewed.
+CipherNES was developed and validated using public NES hardware documentation plus independent test and reference projects. The public source repository deliberately includes no `TEST_ROMS/` directory, independent test-ROM binaries, test runners or diagnostic development tools; those remain external to release sources. Their individual licenses and redistribution rights have not been confirmed, and they are **not** covered by the CipherNES MIT license. Do not make the ROM-inclusive tree public until permissions have been reviewed.
 
 ## AccuracyCoin / TriCNES
 
@@ -30,6 +30,6 @@ Third-party names and trademarks belong to their respective owners.
 For compatibility checks, the project used the independent NES test-ROM suite
 maintained at https://github.com/christopherpow/nes-test-roms .
 All ROM binaries, authorship and any licenses remain with their respective
-authors. Restoring user-supplied files into TEST_ROMS is not an authorization to
-redistribute files publicly. The normal ROM-free source and release ZIPs do
+authors. Possession of third-party test images is not an authorization to
+redistribute them publicly. The normal ROM-free source and release ZIPs do
 not bundle test ROMs or an FDS BIOS.

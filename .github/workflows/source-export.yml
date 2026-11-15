@@ -17,12 +17,8 @@ jobs:
         run: |
           VERSION="$(tr -d '[:space:]' < VERSION)"
           mkdir -p "dist/CipherNES-${VERSION}-Source"
-          # The TEST_ROMS tree is an optional private development fixture set.
-          # Never bundle those third-party images into standard release source.
-          git ls-files -z -- . ':(exclude)TEST_ROMS/**' | tar --null -T - -cf - | tar -xf - -C "dist/CipherNES-${VERSION}-Source"
-          # Include only ROM fixture documentation; the actual images stay excluded.
-          mkdir -p "dist/CipherNES-${VERSION}-Source/TEST_ROMS"
-          cp TEST_ROMS/README.md TEST_ROMS/ROM_MANIFEST.csv TEST_ROMS/.gitignore "dist/CipherNES-${VERSION}-Source/TEST_ROMS/"
+          # Export the exact tracked, ROM-free release source.
+          git ls-files -z | tar --null -T - -cf - | tar -xf - -C "dist/CipherNES-${VERSION}-Source"
           cd dist
           zip -qr "CipherNES-${VERSION}-GitHub-Source.zip" "CipherNES-${VERSION}-Source"
       - name: Upload exact source
