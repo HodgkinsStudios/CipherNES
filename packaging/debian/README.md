@@ -28,7 +28,9 @@ the core linked into `CipherNES`.
 ## Runtime data
 
 The package installs the application under `/usr/lib/ciphernes` and the launcher
-as `/usr/bin/ciphernes`. Writable data is kept under:
+as `/usr/bin/ciphernes`. The updated CipherNES application icon is installed as
+`/usr/share/icons/hicolor/256x256/apps/ciphernes.png` and referenced by the
+installed desktop entry. Writable data is kept under:
 
 ```text
 ${XDG_DATA_HOME:-~/.local/share}/HodgkinsStudios/CipherNES/

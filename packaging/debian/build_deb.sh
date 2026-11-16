@@ -23,13 +23,14 @@ fi
 [[ -x "$BIN_DIR/CipherNES" ]] || { echo "Missing $BIN_DIR/CipherNES" >&2; exit 1; }
 
 rm -rf "$STAGE"
-mkdir -p     "$STAGE/DEBIAN"     "$STAGE/usr/bin"     "$STAGE/usr/lib/ciphernes"     "$STAGE/usr/share/applications"     "$STAGE/usr/share/doc/ciphernes/bios"     "$OUT_DIR"
+mkdir -p     "$STAGE/DEBIAN"     "$STAGE/usr/bin"     "$STAGE/usr/lib/ciphernes"     "$STAGE/usr/share/applications"     "$STAGE/usr/share/icons/hicolor/256x256/apps"     "$STAGE/usr/share/doc/ciphernes/bios"     "$OUT_DIR"
 
 find "$STAGE" -type d -exec chmod g-s {} +
 
 install -m 0755 "$BIN_DIR/CipherNES" "$STAGE/usr/lib/ciphernes/CipherNES"
 install -m 0755 "$ROOT/packaging/debian/ciphernes-launcher.sh" "$STAGE/usr/bin/ciphernes"
 install -m 0644 "$ROOT/packaging/debian/ciphernes.desktop" "$STAGE/usr/share/applications/ciphernes.desktop"
+install -m 0644 "$ROOT/assets/brand/ciphernes-icon.png" "$STAGE/usr/share/icons/hicolor/256x256/apps/ciphernes.png"
 install -m 0644 "$ROOT/LICENSE" "$STAGE/usr/share/doc/ciphernes/LICENSE"
 install -m 0644 "$ROOT/THIRD_PARTY_NOTICES.md" "$STAGE/usr/share/doc/ciphernes/THIRD_PARTY_NOTICES.md"
 install -m 0644 "$ROOT/README.md" "$STAGE/usr/share/doc/ciphernes/README.md"

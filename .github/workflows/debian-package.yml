@@ -31,6 +31,10 @@ jobs:
         run: |
           dpkg-deb -I dist/CipherNES-1.0.2-amd64.deb
           dpkg-deb -c dist/CipherNES-1.0.2-amd64.deb
+          mkdir -p "${{ runner.temp }}/ciphernes-package-check"
+          dpkg-deb -x dist/CipherNES-1.0.2-amd64.deb "${{ runner.temp }}/ciphernes-package-check"
+          cmp assets/brand/ciphernes-icon.png "${{ runner.temp }}/ciphernes-package-check/usr/share/icons/hicolor/256x256/apps/ciphernes.png"
+          grep -qx 'Icon=ciphernes' "${{ runner.temp }}/ciphernes-package-check/usr/share/applications/ciphernes.desktop"
 
       - name: Install package
         run: sudo apt-get install -y ./dist/CipherNES-1.0.2-amd64.deb
