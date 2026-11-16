@@ -48,8 +48,23 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Standalone executable UI failed" }
           if (-not (Test-Path (Join-Path $env:RUNNER_TEMP "ciphernes-windows.png"))) { throw "UI preview missing" }
 
-      - name: Upload Windows build
+      - name: Package Windows release ZIP
+        shell: pwsh
+        run: |
+          $env:CIPHERNES_SKIP_BUILD = '1'
+          .\package_release_windows.ps1
+          $zip = '.\dist\CipherNES-1.0.2-Windows-x86_64.zip'
+          if (-not (Test-Path $zip)) { throw 'Windows distribution ZIP not generated' }
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $entries = [IO.Compression.ZipFile]::OpenRead((Resolve-Path $zip).Path)
+          try {
+            if (-not ($entries.Entries.FullName | Where-Object { $_ -like '*RELEASE_NOTES_1.0.2.md' })) { throw 'Missing v1.0.2 release notes in Windows package' }
+          } finally { $entries.Dispose() }
+
+      - name: Upload Windows release ZIP
         uses: actions/upload-artifact@v4
         with:
           name: CipherNES-Windows
-          path: build/windows/bin/
+          path: |
+            dist/CipherNES-1.0.2-Windows-x86_64.zip
+            build/windows/bin/CipherNES.exe

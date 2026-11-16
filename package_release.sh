@@ -5,7 +5,9 @@ VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
 DIST="$ROOT/dist"
 STAGE="$DIST/CipherNES-$VERSION-Ubuntu-x86_64"
 
-"$ROOT/build_ubuntu.sh"
+if [[ "${CIPHERNES_SKIP_BUILD:-0}" != "1" ]]; then
+    "$ROOT/build_ubuntu.sh"
+fi
 
 rm -rf "$DIST"
 mkdir -p "$STAGE/docs"

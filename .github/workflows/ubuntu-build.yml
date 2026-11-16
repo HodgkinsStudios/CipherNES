@@ -51,8 +51,16 @@ jobs:
           xvfb-run -a build/ubuntu/bin/CipherNES --ui-preview "$RUNNER_TEMP/ciphernes-preview.png"
           test -s "$RUNNER_TEMP/ciphernes-preview.png"
 
-      - name: Upload Ubuntu build
+      - name: Package Ubuntu release ZIP
+        run: |
+          CIPHERNES_SKIP_BUILD=1 ./package_release.sh
+          test -s dist/CipherNES-1.0.2-Ubuntu-x86_64.zip
+          unzip -l dist/CipherNES-1.0.2-Ubuntu-x86_64.zip | grep -F 'RELEASE_NOTES_1.0.2.md'
+
+      - name: Upload Ubuntu release ZIP
         uses: actions/upload-artifact@v4
         with:
           name: CipherNES-Ubuntu
-          path: build/ubuntu/bin/
+          path: |
+            dist/CipherNES-1.0.2-Ubuntu-x86_64.zip
+            dist/SHA256SUMS.txt

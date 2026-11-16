@@ -8,8 +8,10 @@ $Version = (Get-Content (Join-Path $Root "VERSION") -Raw).Trim()
 $Dist = Join-Path $Root "dist"
 $Stage = Join-Path $Dist ("CipherNES-" + $Version + "-Windows-x86_64")
 
-& (Join-Path $Root "build_windows.ps1")
-if ($LASTEXITCODE -ne 0) { throw "Windows build failed." }
+if ($env:CIPHERNES_SKIP_BUILD -ne "1") {
+    & (Join-Path $Root "build_windows.ps1")
+    if ($LASTEXITCODE -ne 0) { throw "Windows build failed." }
+}
 
 if (Test-Path $Dist) { Remove-Item -Recurse -Force $Dist }
 New-Item -ItemType Directory -Force -Path $Stage, (Join-Path $Stage "docs") | Out-Null
