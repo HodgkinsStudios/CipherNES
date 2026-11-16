@@ -71,11 +71,11 @@ CIPHERNES_API int ciphernes_get_api_version() {
 CIPHERNES_API const char* ciphernes_get_core_version_string() {
     // Keep stable for UI display and debugging.
     #if defined(_WIN32)
-    return "CipherNES Core 1.0.1 (Windows, NTSC)";
+    return "CipherNES Core 1.0.2 (Windows, NTSC)";
 #elif defined(__APPLE__)
-    return "CipherNES Core 1.0.1 (macOS, NTSC)";
+    return "CipherNES Core 1.0.2 (macOS, NTSC)";
 #else
-    return "CipherNES Core 1.0.1 (Ubuntu, NTSC)";
+    return "CipherNES Core 1.0.2 (Ubuntu, NTSC)";
 #endif
 }
 

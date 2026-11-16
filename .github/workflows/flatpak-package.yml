@@ -60,7 +60,7 @@ jobs:
 
       - name: Install bundle
         run: |
-          flatpak install --user --noninteractive -y ./dist/CipherNES-1.0.1-x86_64.flatpak
+          flatpak install --user --noninteractive -y ./dist/CipherNES-1.0.2-x86_64.flatpak
 
       - name: Installed launcher smoke test
         run: |
@@ -81,5 +81,5 @@ jobs:
         with:
           name: CipherNES-Flatpak-x86_64
           path: |
-            dist/CipherNES-1.0.1-x86_64.flatpak
-            dist/CipherNES-1.0.1-x86_64.flatpak.sha256
+            dist/CipherNES-1.0.2-x86_64.flatpak
+            dist/CipherNES-1.0.2-x86_64.flatpak.sha256

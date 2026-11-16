@@ -70,7 +70,7 @@ The GitHub Actions build workflows run native startup and platform packaging che
 
 ## Scope of validation
 
-NTSC is the principal timing target. The most recent Ubuntu checks verified core buildability and selected regressions; **native Windows/macOS GUI/controller/audio behavior has not been independently revalidated for v1.0.1**. Mapper registration is not proof of all submapper revisions. Core save-state layouts are versioned and compatibility with older publicly released save files should not be assumed without testing. See [release QA](RELEASING.md) before shipping binaries.
+NTSC is the principal timing target. The most recent Ubuntu checks verified core buildability and selected regressions; **native Windows/macOS GUI/controller/audio behavior has not been independently revalidated for v1.0.2**. Mapper registration is not proof of all submapper revisions. Core save-state layouts are versioned and compatibility with older publicly released save files should not be assumed without testing. See [release QA](RELEASING.md) before shipping binaries.
 
 ## Test-project acknowledgements
 

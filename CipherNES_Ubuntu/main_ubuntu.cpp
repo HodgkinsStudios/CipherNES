@@ -2669,7 +2669,7 @@ void App::drawInfoScreen(int outW, int outH) {
     drawText(sdl, renderer, textX, panel.y + 66, "CIPHERNES", textScale, 220, 188, 255);
     drawText(sdl, renderer, textX, panel.y + 128, "HODGKINSSTUDIOS", 2, 237, 240, 252);
     drawText(sdl, renderer, textX, panel.y + 179, "NES / FAMICOM EMULATOR", 2, 190, 213, 229);
-    drawText(sdl, renderer, textX, panel.y + 220, "VERSION 1.0.1", 2, 255, 204, 120);
+    drawText(sdl, renderer, textX, panel.y + 220, "VERSION 1.0.2", 2, 255, 204, 120);
     drawText(sdl, renderer, textX, panel.y + 259, "LINUX / WINDOWS / MACOS", 2, 174, 194, 214);
     drawText(sdl, renderer, textX, panel.y + 295, "ESC OR CLICK TO RETURN", 2, 128, 159, 185);
 }

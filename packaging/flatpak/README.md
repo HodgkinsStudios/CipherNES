@@ -34,13 +34,13 @@ Then build from the repository root:
 Output:
 
 ```text
-dist/CipherNES-1.0.1-x86_64.flatpak
+dist/CipherNES-1.0.2-x86_64.flatpak
 ```
 
 ## Install
 
 ```bash
-flatpak install --user ./dist/CipherNES-1.0.1-x86_64.flatpak
+flatpak install --user ./dist/CipherNES-1.0.2-x86_64.flatpak
 flatpak run io.github.hodgkinsstudios.CipherNES
 ```
 

@@ -29,9 +29,9 @@ jobs:
 
       - name: Inspect AppImage
         run: |
-          file dist/CipherNES-1.0.1-x86_64.AppImage
-          test -x dist/CipherNES-1.0.1-x86_64.AppImage
-          test -s dist/CipherNES-1.0.1-x86_64.AppImage.sha256
+          file dist/CipherNES-1.0.2-x86_64.AppImage
+          test -x dist/CipherNES-1.0.2-x86_64.AppImage
+          test -s dist/CipherNES-1.0.2-x86_64.AppImage.sha256
 
       - name: Extract-and-run smoke test
         env:
@@ -39,7 +39,7 @@ jobs:
           XDG_DATA_HOME: ${{ runner.temp }}/ciphernes-data
           CIPHERNES_SKIP_INITIAL_CONTROLLER_SCAN: "1"
         run: |
-          dist/CipherNES-1.0.1-x86_64.AppImage --appimage-extract-and-run --help
+          dist/CipherNES-1.0.2-x86_64.AppImage --appimage-extract-and-run --help
           test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/Saves"
           test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/SaveState"
           test -d "$HOME/.local/share/HodgkinsStudios/CipherNES/Screenshots"
@@ -56,14 +56,14 @@ jobs:
           SDL_AUDIODRIVER: dummy
           CIPHERNES_SKIP_INITIAL_CONTROLLER_SCAN: "1"
         run: |
-          dist/CipherNES-1.0.1-x86_64.AppImage --appimage-extract-and-run --ui-preview "${{ runner.temp }}/ciphernes-appimage-preview.png"
+          dist/CipherNES-1.0.2-x86_64.AppImage --appimage-extract-and-run --ui-preview "${{ runner.temp }}/ciphernes-appimage-preview.png"
           test -s "${{ runner.temp }}/ciphernes-appimage-preview.png"
           file "${{ runner.temp }}/ciphernes-appimage-preview.png" | grep -q "PNG image data"
 
       - name: Extract and inspect payload
         run: |
           rm -rf squashfs-root
-          dist/CipherNES-1.0.1-x86_64.AppImage --appimage-extract >/dev/null
+          dist/CipherNES-1.0.2-x86_64.AppImage --appimage-extract >/dev/null
           test -x squashfs-root/AppRun
           test -x squashfs-root/usr/bin/CipherNES
           test -f squashfs-root/usr/lib/libSDL2-2.0.so.0
@@ -79,5 +79,5 @@ jobs:
         with:
           name: CipherNES-AppImage-x86_64
           path: |
-            dist/CipherNES-1.0.1-x86_64.AppImage
-            dist/CipherNES-1.0.1-x86_64.AppImage.sha256
+            dist/CipherNES-1.0.2-x86_64.AppImage
+            dist/CipherNES-1.0.2-x86_64.AppImage.sha256

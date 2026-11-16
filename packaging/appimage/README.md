@@ -23,7 +23,7 @@ Then run:
 Output:
 
 ```text
-dist/CipherNES-1.0.1-x86_64.AppImage
+dist/CipherNES-1.0.2-x86_64.AppImage
 ```
 
 The generated AppImage itself is a release artifact and must not be committed
@@ -32,20 +32,20 @@ to Git.
 ## Run
 
 ```bash
-chmod +x CipherNES-1.0.1-x86_64.AppImage
-./CipherNES-1.0.1-x86_64.AppImage
+chmod +x CipherNES-1.0.2-x86_64.AppImage
+./CipherNES-1.0.2-x86_64.AppImage
 ```
 
 A ROM can be supplied directly:
 
 ```bash
-./CipherNES-1.0.1-x86_64.AppImage /path/to/game.nes
+./CipherNES-1.0.2-x86_64.AppImage /path/to/game.nes
 ```
 
 If FUSE is unavailable, current type-2 AppImages also support:
 
 ```bash
-./CipherNES-1.0.1-x86_64.AppImage --appimage-extract-and-run
+./CipherNES-1.0.2-x86_64.AppImage --appimage-extract-and-run
 ```
 
 ## Bundled runtime components

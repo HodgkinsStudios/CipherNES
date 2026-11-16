@@ -40,7 +40,7 @@ brew install sdl2
 ./build_macos.sh
 ```
 
-The script targets the host architecture and produces `build/macos/CipherNES.app` and associated artifacts. Intel x86_64 and Apple Silicon arm64 targets should be validated independently. A normal `.app` and an optional single-file Mach-O target are supported by the existing packaging scripts; embedded SDL runtime extraction and system security requirements (including signing/notarization) must be verified on actual machines. The macOS build and package was **not compiled in this cleanup environment**.
+The script targets the host architecture and produces `build/macos/CipherNES.app` and associated artifacts. Intel x86_64 and Apple Silicon arm64 targets should be validated independently. A normal `.app` and an optional single-file Mach-O target are supported by the existing packaging scripts; embedded SDL runtime extraction and system security requirements (including signing/notarization) must be verified on actual machines. The macOS Intel and Apple Silicon build jobs passed on GitHub Actions for the updated branding commit; native device interaction, sound, gamepad and notarization/signing remain separate release checks.
 
 ## Per-user data paths
 

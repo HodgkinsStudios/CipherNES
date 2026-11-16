@@ -1,10 +1,10 @@
 # Release preparation checklist
 
-CipherNES source version is defined by `VERSION`. **Do not publish releases, force tags, or overwrite an existing public release automatically.** GitHub preparation is not publication; v1.0.1 remains subject to platform QA. Final binaries must be built and tested from one explicitly approved commit.
+CipherNES source version is defined by `VERSION`. **Do not publish releases, force tags, or overwrite an existing public release automatically.** GitHub preparation is not publication; v1.0.2 remains subject to platform QA. Final binaries must be built and tested from one explicitly approved commit.
 
 ## Before creating a candidate
 
-1. Review `VERSION`, [`README.md`](../README.md), [`RELEASE_NOTES_1.0.1.md`](../RELEASE_NOTES_1.0.1.md), [`CHANGELOG.md`](../CHANGELOG.md), [`LICENSE`](../LICENSE) and [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
+1. Review `VERSION`, [`README.md`](../README.md), [`RELEASE_NOTES_1.0.2.md`](../RELEASE_NOTES_1.0.2.md), [`CHANGELOG.md`](../CHANGELOG.md), [`LICENSE`](../LICENSE) and [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md).
 2. Verify ROM-free source inventory and confirm no private saves, BIOS, games, test-ROM binaries, screenshots or compiled/debug artifacts ship in the source export.
 3. Perform the native build and startup checks described in [TESTING.md](TESTING.md). Independently run AccuracyCoin and broader hardware tests using development-only tools and authorized ROMs before claiming new scores.
 4. Build/test Linux native, Windows x86_64, macOS Intel and Apple Silicon, then package AppImage, Debian and Flatpak where offered. Inspect the package metadata, architecture and dependencies.

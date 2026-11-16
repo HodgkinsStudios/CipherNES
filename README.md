@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img alt="Version 1.0.1" src="https://img.shields.io/badge/version-1.0.1-2563eb" />
+  <img alt="Version 1.0.2" src="https://img.shields.io/badge/version-1.0.2-2563eb" />
   <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-22c55e" />
   <img alt="Primary timing NTSC" src="https://img.shields.io/badge/timing-NTSC-64748b" />
   <img alt="Platforms Linux Windows macOS" src="https://img.shields.io/badge/platforms-Linux%20%7C%20Windows%20%7C%20macOS-0f172a" />
@@ -73,7 +73,7 @@ Load a legally obtained `.nes` file or supported `.zip` archive through **File â
 | **macOS** | `./build_macos.sh` | Requires Apple command-line tools and SDL2 |
 | **Ubuntu/Linux** | `./build_ubuntu.sh` | Build verified on Ubuntu |
 
-See [building and packaging](docs/BUILDING.md). Linux, Windows, macOS Intel and Apple Silicon builds have passed their corresponding hosted GitHub Actions jobs for v1.0.1. Real-device GUI, sound and controller checks remain recommended before publication.
+See [building and packaging](docs/BUILDING.md). GitHub Actions builds Linux, Windows, macOS Intel and Apple Silicon release candidates. Check the final v1.0.2 CI results, and perform real-device GUI, audio and controller checks before publication.
 
 ### Default controls
 
@@ -109,7 +109,7 @@ Detailed descriptions of the seven failures, unverified tests, reproducibility p
 | [Accuracy and testing](docs/TESTING.md) | Test suites, measured results, limitations and credits |
 | [Release preparation](docs/RELEASING.md) | QA checklist and release packaging |
 | [Development](docs/DEVELOPMENT.md) | Regression tools and source-checkpoint workflow |
-| [Release notes](RELEASE_NOTES_1.0.1.md) | What's included in v1.0.1 |
+| [Release notes](RELEASE_NOTES_1.0.2.md) | What's included in v1.0.2 |
 
 ## License
 

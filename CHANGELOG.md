@@ -2,6 +2,15 @@
 
 This project uses semantic versions for the source and release artifacts. A GitHub commit does not imply that a corresponding release has been published.
 
+## 1.0.2 — branding and cross-platform packaging update (2026-11-15)
+
+- Replaced the original project mark with the updated CipherNES NES-themed artwork at the top of the GitHub README and in the in-app About screens.
+- Updated window and application branding assets for Linux, Windows and macOS: PNG artwork, embedded icon pixels, Windows ICO and macOS ICNS.
+- Updated AppImage and Flatpak desktop icons and packaging paths; retained their separate package integrations.
+- Set the project, core version strings, native About panels, metadata, release notes and artifact names to 1.0.2.
+- Kept the existing shared emulator core, API/state format, mapper implementation and documented hardware-accuracy results unchanged; this is a branding and maintenance release.
+- Automated builds cover Ubuntu x86_64, Windows x86_64, macOS Intel/Apple Silicon, Debian, Flatpak and AppImage; hosted CI does not substitute for full native GUI/audio/gamepad testing.
+
 ## 1.0.1 — release-preparation candidate (2026-11-15)
 
 - Professional GitHub README with the measured AccuracyCoin 147/147 final-screen capture.
